@@ -1,0 +1,6 @@
+export const RTLINK = '';
+export const SKIP_WALKTHROUGH = 'SKIP_WALKTHROUGH';
+export const REHYDRATE_STORE = 'REHYDRATE_STORE';
+export const CHANGE_CONNECTION_STATUS = 'CHANGE_CONNECTION_STATUS';
+export const LOGGED_IN = 'LOGGED_IN';
+export const RESET_DATA = 'RESET_DATA';

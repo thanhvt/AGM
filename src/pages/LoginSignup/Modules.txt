@@ -1,0 +1,4 @@
+[**Required Modules**]
+react-navigation
+react-native-vector-icons
+react-native-snap-carousel
