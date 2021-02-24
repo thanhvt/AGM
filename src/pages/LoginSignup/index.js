@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { View, ScrollView, Text, TextInput, SafeAreaView, TouchableOpacity, StatusBar, Image } from 'react-native';
+import { View, ScrollView, Text, TextInput,
+    SafeAreaView, TouchableOpacity, StatusBar, Image, ImageBackground } from 'react-native';
 import Header from './header';
 import styles from './styles';
 import TakeerIcon from '../../components/TakeerIcon';
@@ -11,25 +12,32 @@ import LoginComponent from './LoginComponent';
 import SignupComponent from './SignupComponent';
 import TakeerText from '../../components/TakeerText';
 import { Colors, Styles } from '../../Common';
+import { Container } from 'native-base';
+const bg = require("../../assets/images/bg.png");
 
 class index extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            loginActive:true
+            loginActive: true
         }
     }
+
+    componentDidMount() { 
     
-    toggle=()=>{
-        this.setState({loginActive: !this.state.loginActive});
+        StatusBar.setHidden(true);
+      }
+
+    toggle = () => {
+        this.setState({ loginActive: !this.state.loginActive });
     }
 
-    loadComponent(){
-        if(this.state.loginActive){
+    loadComponent() {
+        if (this.state.loginActive) {
             return (
                 <LoginComponent t={this.toggle} />
             )
-        }else{
+        } else {
             return (
                 <SignupComponent t={this.toggle} />
             )
@@ -38,26 +46,21 @@ class index extends Component {
 
     render() {
         return (
-            <SafeAreaView style={Styles.safeArea}>
-                <View style={{flex:1}}>
-                    <Header navigation={this.props.navigation}/>
-                    <View style={styles.main}>
-                        <View style={styles.iLogo}>
-                            {/* Logo Area */}
-                            <Image source={require('../../assets/images/Logo.png')} />
-                        </View>
-                        <ScrollView style={{flex:1}}>
+            <Container style={Styles.safeArea}>
+                <StatusBar barStyle="light-content" />
+                <ImageBackground source={bg} style={Styles.backgroundLogin}>
+                    <View style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}> 
                         {this.loadComponent()}
-                        </ScrollView>
                     </View>
-                </View>
-            </SafeAreaView>
+                </ImageBackground>
+
+            </Container>
         );
     }
 }
 
-const mapStateToProps = ( state ) => ({
+const mapStateToProps = (state) => ({
     settings: state.settings
 });
 
-export default connect(mapStateToProps,actions)(index);
+export default connect(mapStateToProps, actions)(index);

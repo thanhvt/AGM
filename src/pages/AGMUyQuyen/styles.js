@@ -58,10 +58,17 @@ const styles = StyleSheet.create({
     marginTop: 0,
     marginLeft: 18
   },
+  normalText: {
+    color: Colors.textPrimary,
+    fontSize: 16,
+    marginVertical: 3
+  },
   input: {
-    color: Colors.textWhite,
+    color: Colors.vcb,
     borderRadius: 10,
     borderColor: "#fff",
+    backgroundColor: Colors.textWhite,
+
     // Set border width.
     borderWidth: 1,
     paddingVertical: Platform.OS == 'ios' ? 16 : 12,
@@ -85,16 +92,15 @@ const styles = StyleSheet.create({
   inputLogin: {
     justifyContent: 'center',
     // flex:1,
-    backgroundColor: "#fff",
     paddingVertical: 6,
     // paddingHorizontal: 25,
     marginHorizontal: 25,
     // marginRight: 10,
     // marginLeft: 10,
     // padding: 1,
-    borderRadius: 10,
-    borderWidth: 0.5,
-    borderColor: '#eee'
+    // borderRadius: 10,
+    // borderWidth: 0.5,
+    // borderColor: '#eee'
   },
   iB: {
     borderBottomWidth: 1,

@@ -152,7 +152,7 @@ class TakeerButton extends Component {
                     paddingHorizontal: this.paddingHorizontal(),
                     borderWidth: this.borderWidth(),
                     marginTop:6,
-                    marginRight:8,
+                    marginRight:0,
                     backgroundColor:this.props.backgroundColor,
                     borderRadius: this.borderRadius(),
                     borderColor:this.props.borderColor

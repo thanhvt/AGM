@@ -15,6 +15,7 @@ const IPADPRO129_WIDTH = 1366;
 
 const { height: D_HEIGHT, width: D_WIDTH } = Dimensions.get('window');
 
+const deviceHeight = Dimensions.get("window").height;
 const isIPhoneX = (() => {
   if (Platform.OS === 'web') return false;
 
@@ -114,6 +115,7 @@ const Fonts = {
 };
 
 const Images = {
+    'loading': require('./assets/images/loading.png'),
     'business': require('./assets/images/c01.png'),
     'guitar': require('./assets/images/c02.png'),
     'medicine':  require('./assets/images/c03.png'),
@@ -160,338 +162,419 @@ const Images = {
 
 const Colors = {
   _default:'#FFF',
-  primary:'rgb(20, 38, 62)',
-  primaryLight:'rgb(25, 46, 75)',
-  primaryAccentLight:'rgb(36, 62, 94)',
+  primary:'rgba(8,76,48,255)',
+  primaryLight:'#000', // background screen
+  primaryAccentLight:'rgba(115,191,68,255)',
   primaryAccent: 'rgb(112, 127, 247)',
-  secondary:'rgb(33, 56, 88)',
+  secondary:'rgba(8,67,42,255)', // safeareaview
   textPrimary: '#FFF',
   textSecondary: 'rgb(107, 123, 146)',
   separator: 'rgba(107, 123, 146,0.1)',
   separator1: 'rgba(107, 123, 146,0.2)',
-  yellowish:'rgb(244, 166, 59)'
+  yellowish:'rgb(244, 166, 59)',
+  buttonBg: "#1500FF",
+  vcb: "rgba(8,77,49,255)",
+
+  activeTabColor: "rgba(8,77,49,255)",
+  inactiveTab: "#fff",
+  textWhite: "#fff",
+  bgFB: "#3b5998",
+  bgGG: "#DB4437",
+  green: '#37C034',
+  greentrans: '#93fe8f',
+  gray: '#4d4747',
+  opacity: '#dcdbdb',
+  cyan: '#00ebc0',
+  bgTab: "rgba(1,26,7,255)"
 };
 
+
+
 const Styles = StyleSheet.create({
-  container:{
-    flex:1,
+  container: {
+    flex: 1,
     backgroundColor: Colors.primary
   },
-  safeArea:{
-    flex:1,
-    backgroundColor: Colors.secondary
+  safeArea: {
+    flex: 1,
+    backgroundColor: Colors.secondary,
+    justifyContent: 'center',
+    // paddingTop: statusBarHeight()
   },
-
-  header:{
-    height:50 + statusBarHeight(),
+  modalQuestion: {
+    flex: 1,
+    backgroundColor: Colors.primaryAccentLight
+  },
+  header: {
+    height: 50 + statusBarHeight(),
     //paddingTop: Platform.OS === "android" ? 25 : 0,
     paddingTop: statusBarHeight(),
     backgroundColor: Colors._white,
-    elevation:4,
+    elevation: 4,
     justifyContent: 'center',
-    paddingHorizontal:4,
+    paddingHorizontal: 4,
 
     shadowColor: '#aaa',
     shadowOpacity: 0.3,
-    shadowRadius:8,
-    shadowOffset:{
-      width:2,
-      height:2
+    shadowRadius: 8,
+    shadowOffset: {
+      width: 2,
+      height: 2
     }
-},
+  },
+  appHeader: {
+    minHeight: 60,
+    // paddingTop: Platform.OS === "android" ? 25 : 0,
+    backgroundColor: Colors.bgHeader,
+    justifyContent: 'center',
+    paddingHorizontal: 6
+  },
+  appHeaderLogoText: {
+    color: Colors.textSecondary,
+    fontSize: 25,
+    textAlign: 'center',
+    // fontFamily: 'BaiJamjuree-SemiBold',
+    // fontFamily: 'BaiJamjuree-Medium',
+    // textTransform: 'uppercase'
+    // fontFamily: 'monospace'
+  },
+  bgHeader: {
+    color: Colors.red,
+    flexGrow: 1, alignItems: 'center', paddingVertical: 10
+  },
+backgroundLogin: {
+    flex: 1,
+    width: null,
+    height: deviceHeight,
+    backgroundColor: "rgba(0,0,0,0.1)",
+    justifyContent: 'center'
+  },
+  containerNoHeader: {
+    // paddingTop: 40,
+    flex: 1,
+    paddingHorizontal: 8,
+    backgroundColor: Colors.secondary
+  },
+  containerAfterHeader: {
+    flex: 1,
+    paddingHorizontal: 8
+  },
+  headerTitle: {
+    color: Colors._default,
+    fontSize: 26,
+    // fontFamily: 'BaiJamjuree-SemiBold',
+    marginTop: 8,
+    paddingBottom: 6,
+    // fontFamily: 'BaiJamjuree-SemiBold'
+  },
+  titleKhoaHoc: {
+    color: Colors._default,
+    fontSize: 26,
+    // fontFamily: 'BaiJamjuree-SemiBold',
+    marginTop: 8,
+    paddingBottom: 6,
+  },
+  featuredHolder: {
 
-  appHeader:{
-      minHeight:60,
-      paddingTop: Platform.OS === "android" ? 25 : 0,
-      backgroundColor:Colors.secondary,
-      justifyContent:'center',
-      paddingHorizontal:6
   },
-  appHeaderLogoText:{
-      fontSize:22,
-      color:'#FFF',
-      fontWeight:'bold'
+  featuredHolderImg: {
+    height: 160,
+    width: 140,
+    marginHorizontal: 4,
+    borderRadius: 3,
+    overflow: 'hidden'
   },
-  containerNoHeader:{
-    paddingTop:40,
-    flex:1,
-    paddingHorizontal:8,
-    backgroundColor:Colors.secondary
+  featuredImage: {
+    height: 160,
+    width: 140
   },
-  containerAfterHeader:{
-      flex:1,
-      paddingHorizontal:8
+  featuredHolderTitleHolder: {
+    width: 140,
+    padding: 4
   },
-  headerTitle:{
-      color:'#FFF',
-      fontSize:26,
-      fontWeight:'bold',
-      marginTop:10,
-      paddingBottom:6,
+  featuredHolderTitle: {
+    color: '#eee',
+    fontSize: 16,
+    paddingBottom: 8
   },
-  featuredHolder:{
-
+  featuredHolderPrice: {
+    textAlign: 'center'
   },
-  featuredHolderImg:{
-      height:160,
-      width:140,
-      marginHorizontal:4,
-      borderRadius:3,
-      overflow:'hidden'
-  },
-  featuredImage:{
-    height:160,
-    width:140
-  },
-  featuredHolderTitleHolder:{
-      width:140,
-      padding:4
-  },
-  featuredHolderTitle:{
-      color:'#eee',
-      fontSize:16,
-      paddingBottom:8
-  },
-  featuredHolderPrice:{
-      textAlign:'center'
+  warningText: {
+    color: Colors.red,
+    fontSize: 16,
+    // fontFamily: 'BaiJamjuree-SemiBold',
   },
 
   //icon style
-  iconStyle:{
+  iconStyle: {
 
   },
 
   /////MY COURSES
-  gridContainer:{
-    flex:1,
-    flexDirection:'row',
-    alignItems:'flex-start',
-    flexWrap:'wrap',
+  gridContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
   },
 
-  grid2column:{
-    width:'50%',
-    height:200,
-    justifyContent:'center',
-    alignItems:'center'
+  grid2column: {
+    width: '50%',
+    height: 200,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
 
-  grid_i_container:{
-      margin:4,
-      backgroundColor:'#eee',
+  grid_i_container: {
+    margin: 4,
+    backgroundColor: '#eee',
   },
 
 
   ////SEARCH PAGE
-  searchSection:{
-      paddingVertical:10
+  searchSection: {
+    paddingVertical: 10
   },
-  searchData:{
-    paddingVertical:10
+  searchData: {
+    paddingVertical: 10
   },
-  searchTC:{
+  searchTC: {
 
   },
-  i_c:{
-      marginRight:20,
-      alignItems:'center'
+  i_c: {
+    marginRight: 20,
+    alignItems: 'center'
   },
-  i_p:{
-      width:70,
-      height:70,
-      borderRadius:35,
-      marginBottom:8
+  i_p: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    marginBottom: 8
   },
-  i_a_o:{
-      position:'absolute',
-      width:18,
-      height:18,
-      backgroundColor:Colors.primary,
-      top:0,
-      right:2,
-      zIndex:3,
-      borderRadius:10
+  i_a_o: {
+    position: 'absolute',
+    width: 18,
+    height: 18,
+    backgroundColor: Colors.primary,
+    top: 0,
+    right: 2,
+    zIndex: 3,
+    borderRadius: 10
   },
-  i_a_o_c:{
-        position:'absolute',
-        width:18,
-        height:18,
-        backgroundColor:Colors.secondary,
-        top:0,
-        right:0,
-        zIndex:3,
-        borderRadius:10
-    },
-  i_o:{
-      flex:1,
-      margin:3,
-      borderRadius:8,
-      backgroundColor:'green'
+  i_a_o_c: {
+    position: 'absolute',
+    width: 18,
+    height: 18,
+    backgroundColor: Colors.secondary,
+    top: 0,
+    right: 0,
+    zIndex: 3,
+    borderRadius: 10
   },
-  c_i_o:{
-    flex:1,
-    margin:3,
-    borderRadius:8,
-    backgroundColor:'green'
+  i_o: {
+    flex: 1,
+    margin: 3,
+    borderRadius: 8,
+    backgroundColor: 'green'
   },
-  c_i_n:{
-    flex:1,
-    margin:3,
-    borderRadius:8,
-    backgroundColor:Colors.textSecondary
+  c_i_o: {
+    flex: 1,
+    margin: 3,
+    borderRadius: 8,
+    backgroundColor: 'green'
   },
-  i_tc:{
-      color:'#FFF',
-      fontWeight:'bold'
+  c_i_n: {
+    flex: 1,
+    margin: 3,
+    borderRadius: 8,
+    backgroundColor: Colors.textSecondary
   },
-  i_cc:{
-      color:'#888'
+  i_tc: {
+    color: '#FFF',
+    // fontFamily: 'BaiJamjuree-SemiBold'
   },
-  gridCategories:{
-      width: Dimensions.get('screen').width/3-22,
-      height:Dimensions.get('screen').width/3-22,
-      alignItems:'center',
-      justifyContent:'center',
-      backgroundColor:Colors.primaryAccentLight,
-      borderRadius:Dimensions.get('screen').width/3
+  i_cc: {
+    color: '#888'
   },
-  gridWrapInnerContainer:{
-      margin:4,
-      marginBottom:10,
-      padding:4
+  gridCategories: {
+    width: Dimensions.get('screen').width / 3 - 22,
+    height: Dimensions.get('screen').width / 3 - 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.primaryAccentLight,
+    borderRadius: Dimensions.get('screen').width / 3
   },
-  gridWrapContainer:{
-      flexDirection:'row',
-      flexWrap:'wrap',
-      alignItems:'flex-start'
+  gridWrapInnerContainer: {
+    margin: 4,
+    marginBottom: 10,
+    padding: 4
   },
-  gridCatTitle:{
-      color:'#FFF',
-      textAlign:'center',
-      fontWeight:'bold',
-      paddingVertical:6
+  gridWrapContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start'
+  },
+  gridCatTitle: {
+    color: '#FFF',
+    textAlign: 'center',
+    // fontFamily: 'BaiJamjuree-SemiBold',
+    paddingVertical: 6
   },
 
   //Homepage Latest Styles
-  latestHolder:{
-      flexDirection:'row',
-      marginVertical:6
+  latestHolder: {
+    flexDirection: 'row',
+    marginVertical: 6
   },
-  latestImage:{
-      height:160,
-      width:130,
-      borderRadius:4,
-      overflow:'hidden',
-      backgroundColor:Colors.primaryAccentLight,
+  latestImage: {
+    height: 100,
+    width: 150,
+    borderRadius: 10,
+    overflow: 'hidden',
+    backgroundColor: Colors.primaryAccentLight,
+    marginTop: 5
   },
   //latest cover style
-  latestCover:{
-    height:160,
-    width:130,
+  latestCover: {
+    height: 120,
+    width: 130,
   },
-  latestContentHolder:{
-      marginHorizontal:8,
-      width: Dimensions.get('screen').width-150,
-      justifyContent:'space-between',
-      paddingVertical:3
+  latestContentHolder: {
+    marginHorizontal: 8,
+    width: Dimensions.get('screen').width - 150,
+    justifyContent: 'space-between',
+    // paddingVertical: 3,
+    marginLeft: 20
   },
-  latestTitle:{
-      fontSize:18,
-      color:'#eee',
-      marginBottom:15
+  latestTitle: {
+    fontSize: 18,
+    color: Colors.textPrimary,
+    marginBottom: 5,
+    // fontFamily: 'BaiJamjuree-SemiBold',
+    textAlignVertical: 'top',
+    // textAlign: 'right'
   },
-  latestListH:{
-      fontSize:18,
-      color:'#eee',
-      textAlign:'center'
+  latestListH: {
+    fontSize: 18,
+    color: Colors.textPrimary,
+    textAlign: 'center'
   },
-  latestListB:{
-      color: Colors.textSecondary,
-      textAlign:'center'
+  latestListB: {
+    color: Colors.textSecondary,
+    textAlign: 'center'
   },
 
   ///Chats
-  chatOuter:{
-      
+  chatOuter: {
+
   },
 
   //badge
-  badgeHolder:{
-      flexDirection:'row',
-      marginTop:6
+  badgeHolder: {
+    flexDirection: 'row',
+    marginTop: 6
   },
-  badge:{
-      marginRight:6
+  badge: {
+    marginRight: 6
   },
-  profilePhoto:{
-      width:100,
-      marginRight:10,
-      marginTop:10
+  profilePhoto: {
+    width: 100,
+    marginRight: 10,
+    marginTop: 10
   },
-  settingIcon:{
-    paddingVertical:10
+  settingIcon: {
+    paddingVertical: 10
   },
-  settingContent:{
-    flex:1, 
-    flexDirection:'row', 
-    alignItems:'center', 
-    justifyContent:'space-between',
-    borderBottomWidth:1,
+  settingContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  settingItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: 0.5,
     borderBottomColor: Colors.separator,
-    paddingTop:8,
-    paddingBottom:13
+    opacity: 0.8
   },
-  settingItem:{
-    flexDirection:'row', 
-    alignItems:'center',
-    justifyContent:'space-between',
-  },
-  settingLabel:{
+  settingLabel: {
     color: Colors.textPrimary,
     fontSize: Fonts.size.h6,
-    paddingLeft:6
+    paddingLeft: 6
   },
-  c_p:{
-    width:50,
-    height:50,
-    borderRadius:25,
-    marginBottom:8
+  c_p: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginBottom: 8
   },
-  cri:{
-    alignItems:'center',
-    justifyContent:'center'
+  cri: {
+    alignItems: 'center',
+    justifyContent: 'center'
   },
-  crg:{
+  crg: {
 
   },
-  crth:{
+  crth: {
     color: Colors.textPrimary,
     fontSize: Fonts.size.h4
   },
-  crtp:{
+  crtp: {
     color: Colors.textSecondary,
     fontSize: Fonts.size.h7
   },
-  itm:{
-      flex:1
+  itm: {
+    flex: 1
   },
-  itb:{
-    position:'absolute',
-    left:0,
-    bottom:6,
-    right:0,
-    borderBottomWidth:1,
+  itb: {
+    position: 'absolute',
+    left: 0,
+    bottom: 6,
+    right: 0,
+    borderBottomWidth: 1,
     borderBottomColor: Colors.separator1,
   },
-  ptt:{
+  ptt: {
     color: Colors.textPrimary,
-    textAlign:'center',
+    textAlign: 'center',
     fontSize: Fonts.size.h5,
-    fontWeight:'bold'
+    // fontFamily: 'BaiJamjuree-SemiBold'
   },
-  ptb:{
+  ptb: {
     color: Colors.textSecondary,
-    textAlign:'center'
+    textAlign: 'center'
+  },
+  normalText: {
+    color: Colors.textPrimary,
+    fontSize: 16,
+    // fontFamily: 'BaiJamjuree-SemiBold',
+  },
+  colorText: {
+    color: Colors.textPrimary,
+    fontSize: 16,
+    // fontFamily: 'BaiJamjuree-SemiBold'
+  },
+  borderPicker: {
+    flexDirection: 'row', justifyContent: 'space-between',
+    borderRadius: 5, borderWidth: 1,
+    borderColor: '#bdc3c7', overflow: 'hidden',
+    flex: 1,
+    marginTop: 5
+  },
+  crazyText: {
+    color: '#cfcfcf',
+    fontSize: 28,
+    padding: 5,
+    borderRightColor: '#12ca4a',
+    borderLeftColor: '#11bca4',
+    borderTopColor: '#22cb00',
+    borderBottomColor: '#ffc100',
+    borderRadius: 5,
+    // fontFamily: 'BaiJamjuree-SemiBold',
+    borderWidth: 1
   }
 });
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { 
-    Text, 
-    StyleSheet, 
+import {
+    Text,
+    StyleSheet,
     View,
     ActivityIndicator,
     StatusBar
@@ -22,10 +22,11 @@ import { Styles, Colors } from './Common';
 //////////////////// IMPORT PAGES ////////////////
 //Main Tabs
 import TabHome from './pages/TabHome';
-import TabSearch from './pages/TabSearch';
+import AGMUyQuyen from './pages/AGMUyQuyen';
 import TabCourses from './pages/TabCourses';
 import TabChats from './pages/TabChats';
 import TabProfile from './pages/TabProfile';
+import TabSearch from './pages/TabSearch';
 
 //Import Pages
 import Drawer from './Drawer';
@@ -42,101 +43,107 @@ import Chat from './pages/Chat';
 import Congrats from './pages/Congrats';
 import Instructor from './pages/User/Instructor';
 import Student from './pages/User/Student';
+import UyQuyen from './pages/AGMUyQuyen/UyQuyen';
+
+import Checkin from './pages/AGMCheckin';
+import ThucHienCheckin from './pages/AGMCheckin/ThucHienCheckin';
 
 //////////////////////////////////////////////////
 /////////////////// NAVIGATORS ///////////////////
 //Tab Navigator for Home and Settings Screen
 const TTabNavigator = createBottomTabNavigator({
-    TabHome:{
+    AGMUyQuyen: {
+        screen: AGMUyQuyen,
+        navigationOptions: {
+            title: 'Uỷ quyền',
+            tabBarIcon: ({ tintColor }) => <TakeerIcon
+                iconType="MaterialIcons"
+                iconName="assessment"
+                iconSize={24}
+                iconColor={tintColor}
+                iconPosition="" />,
+        },
+    },
+    AGMCheckin: {
+        screen: Checkin,
+        navigationOptions: {
+            title: 'Checkin',
+            tabBarIcon: ({ tintColor }) => <TakeerIcon
+                iconType="MaterialCommunityIcons"
+                iconName="presentation-play"
+                iconSize={24}
+                iconColor={tintColor}
+                iconPosition="" />,
+        },
+    },
+    TabHome: {
         screen: TabHome,
-        navigationOptions:{
-            header:null,
-            tabBarIcon: ({tintColor}) => <TakeerIcon
-            iconType="Ionicons"
-            iconName="ios-home"
-            iconSize={28}
-            iconColor={tintColor}
-            iconPosition=""/>,
+        navigationOptions: {
+            title: 'Home',
+            tabBarIcon: ({ tintColor }) => <TakeerIcon
+                iconType="Ionicons"
+                iconName="ios-home"
+                iconSize={24}
+                iconColor={tintColor}
+                iconPosition="" />,
         },
     },
-    TabSearch:{
-        screen: TabSearch,
-        navigationOptions:{
-            header:null,
-            tabBarIcon: ({tintColor}) => <TakeerIcon
-            iconType="Ionicons"
-            iconName="ios-search"
-            iconSize={28}
-            iconColor={tintColor}
-            iconPosition=""/>,
-        },
-    },
-    TabCourses:{
-        screen: TabCourses,
-        navigationOptions:{
-            header:null,
-            tabBarIcon: ({tintColor}) => <TakeerIcon
-            iconType="MaterialCommunityIcons"
-            iconName="presentation-play"
-            iconSize={28}
-            iconColor={tintColor}
-            iconPosition=""/>,
-        },
-    },
-    TabChats:{
+    TabChats: {
         screen: TabChats,
-        navigationOptions:{
-            header:null,
-            tabBarIcon: ({tintColor}) => <TakeerIcon
-            iconType="MaterialCommunityIcons"
-            iconName="comment-text"
-            iconSize={28}
-            iconColor={tintColor}
-            iconPosition=""/>,
+        navigationOptions: {
+            title: 'Phiếu bầu',
+            tabBarIcon: ({ tintColor }) => <TakeerIcon
+                iconType="MaterialCommunityIcons"
+                iconName="comment-text"
+                iconSize={24}
+                iconColor={tintColor}
+                iconPosition="" />,
         },
     },
-    TabProfile:{
+    TabProfile: {
         screen: TabProfile,
-        navigationOptions:{
-            header:null,
-            tabBarIcon: ({tintColor}) => <TakeerIcon
-            iconType="MaterialCommunityIcons"
-            iconName="account-edit"
-            iconSize={28}
-            iconColor={tintColor}
-            iconPosition=""/>,
+        navigationOptions: {
+            title: 'Cài đặt',
+            tabBarIcon: ({ tintColor }) => <TakeerIcon
+                iconType="MaterialCommunityIcons"
+                iconName="account-edit"
+                iconSize={24}
+                iconColor={tintColor}
+                iconPosition="" />,
         },
     },
-},{
-    tabBarPosition: 'bottom',
-    animationEnabled: false,
-    swipeEnabled: false,
-    tabBarOptions: {
-      activeTintColor: Colors.primaryAccent,
-      inactiveTintColor: Colors.textSecondary,
-      showLabel:false,
-      showIcon:true,
-      indicatorStyle:{
-        backgroundColor: 'transparent',
-      },
-      tabStyle: {
-        justifyContent:'center',
-        alignItems:'center',
-        /*...Platform.select({
-            ios:{
-                paddingBottom:20,
+}, {
+        initialRouteName: "TabHome",
+        tabBarPosition: 'bottom',
+        animationEnabled: false,
+        swipeEnabled: false,
+        tabBarOptions: {
+            activeTintColor: Colors.activeTabColor,
+            inactiveTintColor: Colors.inactiveTab,
+            showLabel: true,
+            showIcon: true,
+            indicatorStyle: {
+                backgroundColor: 'transparent',
             },
-            android:{
-                paddingBottom:10,
-            }
-        }),*/
-        paddingHorizontal:0,
-      },
-      style: {
-        backgroundColor: Colors.primary,
-      },
-    },
-});
+            tabStyle: {
+                justifyContent: 'center',
+                alignItems: 'center',
+                /*...Platform.select({
+                    ios:{
+                        paddingBottom:20,
+                    },
+                    android:{
+                        paddingBottom:10,
+                    }
+                }),*/
+                paddingHorizontal: 0,
+                paddingTop: 3
+            },
+            style: {
+                backgroundColor: Colors.bgTab,
+            },
+        },
+    });
 
 
 //wrap tab navigation into drawer navigation
@@ -144,74 +151,82 @@ const TabsWithDrawerNavigation = createDrawerNavigator({
     Tbs: {
         screen: TTabNavigator,
     }
-},{
-    drawerOpenRoute: 'DrawerOpen',
-    drawerCloseRoute: 'DrawerClose',
-    drawerToggleRoute: 'DrawerToggle',
-    drawerWidth: 250,
-    contentComponent: props => <Drawer {...props} />,
-    drawerBackgroundColor: 'transparent'
-});
+}, {
+        drawerOpenRoute: 'DrawerOpen',
+        drawerCloseRoute: 'DrawerClose',
+        drawerToggleRoute: 'DrawerToggle',
+        drawerWidth: 250,
+        contentComponent: props => <Drawer {...props} />,
+        drawerBackgroundColor: 'transparent'
+    });
 
 //lastly stack drawer with tabs and modal navigation
 const MasterNavigator = createAppContainer(createStackNavigator({
-    TabsWithDrawer:{
+    TabsWithDrawer: {
         screen: TabsWithDrawerNavigation,
     },
-    Modal:{
+    Modal: {
         screen: Modal
     },
     LoginSignup: {
         screen: LoginSignup
     },
-    Course:{
+    Course: {
         screen: Course
     },
-    CourseDetail:{
+    CourseDetail: {
         screen: CourseDetail
     },
     Chat: {
         screen: Chat
     },
-    Congrats:{
+    UyQuyen: {
+        screen: UyQuyen
+    },
+    ThucHienCheckin: {
+        screen: ThucHienCheckin
+    }, 
+    Congrats: {
         screen: Congrats
     },
-    Instructor:{
+    Instructor: {
         screen: Instructor
     },
-    Student:{
+    Student: {
         screen: Student
     }
-},{
-    mode: 'modal',
-    headerMode:'none'
-}));
+}, {
+        mode: 'modal',
+        headerMode: 'none'
+    }));
 
 //////////////////////////////////////////////////
 ///////////// MAIN CLASS /////////////////////////
-const StartApp = ({settings, rehydrate}) =>{
-    if(rehydrate){
+const StartApp = ({ settings, rehydrate }) => {
+    if (rehydrate) {
         //check if setting splash is true
-        if(settings.walkthrough){
-            if(!settings.userLoggedIn){
+        // if (settings.walkthrough) 
+        {
+            if (!settings.userLoggedIn) {
                 return (
                     <LoginSignup />
                 );
-            }else{
+            } else {
                 return (
                     <MasterNavigator />
                 );
             }
-        }else{
-            return (
-                <Walkthrough />
-            )
         }
-   }else{
-       return (
-           <AppLoader />
-       )
-   }
+        // else {
+        //     return (
+        //         <Walkthrough />
+        //     )
+        // }
+    } else {
+        return (
+            <AppLoader />
+        )
+    }
 }
 const mapStateToProps = (state) => ({
     settings: state.settings,
@@ -224,8 +239,8 @@ Start = connect(mapStateToProps)(StartApp);
 ////////// EXPORT ROOT APP /////////////////////
 const Root = () => (
     <Provider store={store}>
-        <View style={{flex:1}}>
-            <StatusBar 
+        <View style={{ flex: 1 }}>
+            <StatusBar
                 backgroundColor="#000"
                 barStyle="light-content"
                 translucent={true}
