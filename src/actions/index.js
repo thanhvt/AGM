@@ -2,7 +2,9 @@ import {
     SKIP_WALKTHROUGH,
     CHANGE_CONNECTION_STATUS,
     LOGGED_IN,
-    RESET_DATA
+    RESET_DATA,
+
+    USER_AGM
  } from './types';
 
 /////////////////////////////////////
@@ -32,3 +34,10 @@ export const resetData = () => {
         type: RESET_DATA
     }
 }
+
+export const userAGM = (item) => (
+    {
+        type: USER_AGM,
+        payload: item
+    }
+)

@@ -47,6 +47,8 @@ import UyQuyen from './pages/AGMUyQuyen/UyQuyen';
 
 import Checkin from './pages/AGMCheckin';
 import ThucHienCheckin from './pages/AGMCheckin/ThucHienCheckin';
+import BieuQuyetCauHoi from './pages/AGMBieuQuyetBau/BieuQuyetCauHoi';
+import AGMBieuQuyetBau from './pages/AGMBieuQuyetBau';
 
 //////////////////////////////////////////////////
 /////////////////// NAVIGATORS ///////////////////
@@ -88,8 +90,8 @@ const TTabNavigator = createBottomTabNavigator({
                 iconPosition="" />,
         },
     },
-    TabChats: {
-        screen: TabChats,
+    AGMBieuQuyetBau: {
+        screen: AGMBieuQuyetBau,
         navigationOptions: {
             title: 'Phiếu bầu',
             tabBarIcon: ({ tintColor }) => <TakeerIcon
@@ -182,6 +184,9 @@ const MasterNavigator = createAppContainer(createStackNavigator({
     },
     UyQuyen: {
         screen: UyQuyen
+    },
+    BieuQuyetCauHoi: {
+        screen: BieuQuyetCauHoi
     },
     ThucHienCheckin: {
         screen: ThucHienCheckin

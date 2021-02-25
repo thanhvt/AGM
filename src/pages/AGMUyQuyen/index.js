@@ -24,6 +24,7 @@ import OrientationLoadingOverlay from 'react-native-orientation-loading-overlay'
 
 import TakeerIcon from './../../components/TakeerIcon';
 import { Fab } from 'native-base';
+import { url_UyQuyen_List } from '../../Global';
 var BUTTONS = [
     { text: "Tiếng Anh", icon: "american-football", iconColor: "#2c8ef4", value: "en-US" },
     { text: "Tiếng Tây Ban Nha", icon: "american-football", iconColor: "#ddd2ac", value: "es-ES" },
@@ -83,6 +84,7 @@ class AGMUyQuyen extends Component {
         super(props);
         this.state = {
             isLoading: false,
+            lstUyQuyen: []
 
         };
     }
@@ -103,44 +105,66 @@ class AGMUyQuyen extends Component {
     loadInitialState = async () => {
         StatusBar.setHidden(true);
 
+        await this.setState({
+            isLoading: true,
+        });
 
-        // await this.setState({
-        //     isLoading: true,
-        // });
 
-        // fetch(urlApiGetKhoaHoc("-1"))
-        //     .then((res) => {
-        //         if (res.ok) {
-        //             return res.json();
-        //         } else {
-        //             if (this._isMounted) {
-        //                 this.setState({
-        //                     lstKhoaHoc: [],
-        //                     isLoading: false,
-        //                 });
-        //             }
-        //         }
+        var sURL = await url_UyQuyen_List();
+        await fetch(sURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "username": this.props.agm.userAGM.userName,
+                "token": this.props.agm.userAGM.signInToken
+            }
+        })
+            .then(res => {
+                return res.json();
+            })
+            .then(response => {
+                console.log("url_UyQuyen_List", response);
+                if (response.State == true) {
+                    this.setState({ lstUyQuyen: response.Data});
+                } else {
+
+                }
+                this.setState({
+                    isLoading: false
+                });
+            })
+            .catch(e => {
+                console.log('exp', e)
+                this.setState({
+                    isLoading: false
+                });
+            });
+
+        // let data = {
+        //     CommentContent: '111',
+        //     UserName: 'dunghoang',
+        //     UserId: '12',
+        //     LessionId: 22,
+        //     CreatedBy: 'thanh'
+        //   };
+        //   var result = await fetch('http://apil5.vnittech.com/api/Bookmark/AddQuestion/7C383E6B-C314-4F82-FB66-08D85E1AAA5E/22/dunghoang', {
+        //     method: 'POST',
+        //     headers: {
+        //       'Accept': 'application/json',
+        //       'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify(data)
+        //   })
+        //     .then((res) => res.json())
+        //     .then(resJson => {
+
+        //       console.log("urlApiSendComment", resJson);
+
         //     })
-        //     .then((resJson) => {
-
-        //         if (this._isMounted) {
-        //             if (resJson.State) {
-        //                 this.setState({
-        //                     lstKhoaHoc: resJson.Data.Results,
-        //                     isLoading: false,
-        //                 });
-        //                 console.log('lstKhoaHoc', resJson.Data.Results);
-        //             }
-        //         }
-        //     })
-        //     .catch((error) => {
-        //         if (this._isMounted) {
-        //             this.setState({
-        //                 lstKhoaHoc: [],
-        //                 isLoading: false,
-        //             });
-        //         }
+        //     .catch(e => {
+        //       console.log("ex", e);
         //     });
+
     }
 
     goCourse = (course) => {
@@ -187,7 +211,7 @@ class AGMUyQuyen extends Component {
 
     render() {
 
-        // const lstKhoaHoc = this.props.language5.listKhoaHoc;
+        // const lstUyQuyen = this.props.language5.listKhoaHoc;
 
         return (
             // <SafeAreaView style={Styles.safeArea}>
@@ -206,32 +230,32 @@ class AGMUyQuyen extends Component {
 
                         <View>
 
-
-                            {Featured.map((v, i) => (
+                            {this.state.lstUyQuyen.map((v, i) => (
                                 <TouchableOpacity key={`${i}-latest`} style={[Styles.latestHolder, {
                                     backgroundColor: 'rgba(255,255,255,0.03)',
                                     borderRadius: 4
                                 }]} onPress={() => this.goCourse(v)}>
-                                    <View style={Styles.latestImage}>
-                                        <Image source={v.cover} style={Styles.latestCover}
+                                    <View style={[Styles.latestImage, {justifyContent: 'center', alignItems: 'center'}]}>
+                                        {/* <Image source={v.cover} style={Styles.latestCover}
                                             resizeMethod="scale"
-                                        />
+                                        /> */}
+                                        <TakeerText style={Styles.latestTitleUQ}>{v.CMT_NGUOIUQ}</TakeerText>
                                     </View>
                                     <View style={[Styles.latestContentHolder, { flex: 1 }]}>
                                         <View>
-                                            <TakeerText style={Styles.latestTitle}>{v.title}</TakeerText>
+                                            <TakeerText style={Styles.latestTitle}>{v.NGUOI_UQ}</TakeerText>
                                             <View style={{ alignItems: 'center' }}>
 
                                             </View>
                                         </View>
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 8 }}>
                                             <View>
-                                                <TakeerText style={Styles.latestListH}>215</TakeerText>
-                                                <TakeerText style={Styles.latestListB}>Người đăng ký</TakeerText>
+                                                <TakeerText style={Styles.latestListH}>{v.SOCP_UQ}</TakeerText>
+                                                <TakeerText style={Styles.latestListB}>Số CP UQ</TakeerText>
                                             </View>
                                             <View>
-                                                <TakeerText style={Styles.latestListH}>14</TakeerText>
-                                                <TakeerText style={Styles.latestListB}>Bài học</TakeerText>
+                                                <TakeerText style={Styles.latestListH}>{v.CMTDUOC_UQ}</TakeerText>
+                                                <TakeerText style={Styles.latestListB}>CMND người được UQ</TakeerText>
                                             </View>
                                         </View>
                                     </View>
@@ -281,6 +305,6 @@ class AGMUyQuyen extends Component {
 
 const mapStateToProps = (state) => ({
     settings: state.settings,
-    language5: state.language5
+    agm: state.agm
 })
 export default connect(mapStateToProps, actions)(AGMUyQuyen);

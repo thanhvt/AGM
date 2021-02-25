@@ -428,8 +428,8 @@ backgroundLogin: {
     marginVertical: 6
   },
   latestImage: {
-    height: 100,
-    width: 150,
+    height: 70,
+    width: 100,
     borderRadius: 10,
     overflow: 'hidden',
     backgroundColor: Colors.primaryAccentLight,
@@ -446,6 +446,15 @@ backgroundLogin: {
     justifyContent: 'space-between',
     // paddingVertical: 3,
     marginLeft: 20
+  },
+
+  latestTitleUQ: {
+    fontSize: 16,
+    color: Colors.textPrimary,
+    marginBottom: 5,
+    // fontFamily: 'BaiJamjuree-SemiBold',
+    textAlignVertical: 'top',
+    // textAlign: 'right'
   },
   latestTitle: {
     fontSize: 18,

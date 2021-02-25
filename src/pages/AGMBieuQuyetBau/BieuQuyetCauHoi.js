@@ -16,11 +16,9 @@ import styles from './styles';
 import TakeerButton from '../../components/TakeerButton';
 
 
-
-
 const { width, height } = Dimensions.get('window')
 
-class ThucHienCheckin extends Component {
+class BieuQuyetCauHoi extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -414,4 +412,4 @@ class ThucHienCheckin extends Component {
     }
 }
 
-export default ThucHienCheckin;
+export default BieuQuyetCauHoi;

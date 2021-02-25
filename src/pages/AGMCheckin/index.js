@@ -44,7 +44,7 @@ var CANCEL_INDEX = 4;
 
 var Featured = [
     {
-        title: 'Business Management',
+        title: 'Đỗ Quốc Anh - 92829293',
         curPrice: 12.99,
         oldPrice: 19.99,
         cover: Images.business,
@@ -52,7 +52,7 @@ var Featured = [
         category: 'Business'
     },
     {
-        title: 'Learn How To Play Guitar',
+        title: 'Nguyễn Anh Tuấn - 092829921',
         curPrice: 16.99,
         oldPrice: 20.99,
         cover: Images.guitar,
@@ -60,7 +60,7 @@ var Featured = [
         category: 'Technology'
     },
     {
-        title: 'Medicine & Biology Basics',
+        title: 'Trịnh Văn Thanh - 02928383',
         curPrice: 10.98,
         oldPrice: 10.98,
         cover: Images.medicine,
@@ -209,29 +209,33 @@ class Checkin extends Component {
 
                             {Featured.map((v, i) => (
                                 <TouchableOpacity key={`${i}-latest`} style={[Styles.latestHolder, {
-                                    backgroundColor: 'rgba(255,255,255,0.03)',
+                                    backgroundColor: Colors.opacity,
                                     borderRadius: 4
                                 }]} onPress={() => this.goCourse(v)}>
-                                    <View style={Styles.latestImage}>
+                                    {/* <View style={Styles.latestImage}>
                                         <Image source={v.cover} style={Styles.latestCover}
                                             resizeMethod="scale"
                                         />
-                                    </View>
+                                    </View> */}
+                                    <TakeerText style={Styles.latestTitle}>{i + 1}.</TakeerText>
                                     <View style={[Styles.latestContentHolder, { flex: 1 }]}>
-                                        <View>
+                                   
+                                        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                                            
                                             <TakeerText style={Styles.latestTitle}>{v.title}</TakeerText>
-                                            <View style={{ alignItems: 'center' }}>
-
-                                            </View>
+                                            <TakeerText style={Styles.latestTitle}>SL in: 13</TakeerText>
+                                            {/* <View style={{ alignItems: 'center' }}>
+                                            <TakeerText style={Styles.latestTitle}>{v.title}</TakeerText>
+                                            </View> */}
                                         </View>
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 8 }}>
                                             <View>
                                                 <TakeerText style={Styles.latestListH}>215</TakeerText>
-                                                <TakeerText style={Styles.latestListB}>Người đăng ký</TakeerText>
+                                                <TakeerText style={Styles.latestListB}>Số CP sở hữu</TakeerText>
                                             </View>
                                             <View>
                                                 <TakeerText style={Styles.latestListH}>14</TakeerText>
-                                                <TakeerText style={Styles.latestListB}>Bài học</TakeerText>
+                                                <TakeerText style={Styles.latestListB}>Số CP được UQ</TakeerText>
                                             </View>
                                         </View>
                                     </View>

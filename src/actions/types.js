@@ -4,3 +4,6 @@ export const REHYDRATE_STORE = 'REHYDRATE_STORE';
 export const CHANGE_CONNECTION_STATUS = 'CHANGE_CONNECTION_STATUS';
 export const LOGGED_IN = 'LOGGED_IN';
 export const RESET_DATA = 'RESET_DATA';
+
+
+export const USER_AGM = 'USER_AGM';

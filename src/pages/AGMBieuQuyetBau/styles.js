@@ -5,7 +5,6 @@ const { Dimensions } = React;
 
 const deviceHeight = Dimensions.get("window").height;
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -16,6 +15,15 @@ const styles = StyleSheet.create({
   main: {
     flex: 1,
     backgroundColor: Colors.secondary
+  },
+  latestTitle: {
+    fontSize: 18,
+    color: Colors.primary,
+    marginBottom: 5,
+    marginTop: 5,
+    // fontFamily: 'BaiJamjuree-SemiBold',
+    textAlignVertical: 'top',
+    // textAlign: 'right'
   },
   otherLinksContainer: {
     // paddingTop: deviceHeight < 600 ? 5 : Platform.OS === "android" ? 10 : 15,
@@ -58,10 +66,17 @@ const styles = StyleSheet.create({
     marginTop: 0,
     marginLeft: 18
   },
+  normalText: {
+    color: Colors.textPrimary,
+    fontSize: 16,
+    marginVertical: 3
+  },
   input: {
     color: Colors.vcb,
     borderRadius: 10,
     borderColor: "#fff",
+    backgroundColor: Colors.textWhite,
+
     // Set border width.
     borderWidth: 1,
     paddingVertical: Platform.OS == 'ios' ? 16 : 12,
@@ -85,16 +100,15 @@ const styles = StyleSheet.create({
   inputLogin: {
     justifyContent: 'center',
     // flex:1,
-    backgroundColor: "#fff",
     paddingVertical: 6,
     // paddingHorizontal: 25,
     marginHorizontal: 25,
     // marginRight: 10,
     // marginLeft: 10,
     // padding: 1,
-    borderRadius: 10,
-    borderWidth: 0.5,
-    borderColor: '#eee'
+    // borderRadius: 10,
+    // borderWidth: 0.5,
+    // borderColor: '#eee'
   },
   iB: {
     borderBottomWidth: 1,
