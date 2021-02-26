@@ -10,7 +10,7 @@ target 'AGM' do
 
   permissions_path = '../node_modules/react-native-permissions/ios'
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
-
+  pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
   target 'AGMTests' do
     inherit! :complete
     # Pods for testing

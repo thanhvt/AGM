@@ -22,6 +22,7 @@ import OrientationLoadingOverlay from 'react-native-orientation-loading-overlay'
 // import { urlApiGetKhoaHoc, urlServerImage, urlApiGetThongTinUser } from './../../Global';
 // import { urlApiGetDanhMucKhoaHoc } from '../../Global'; 
 
+import { NavigationEvents } from "react-navigation";
 import TakeerIcon from './../../components/TakeerIcon';
 import { Fab } from 'native-base';
 import { url_UyQuyen_List } from '../../Global';
@@ -109,7 +110,6 @@ class AGMUyQuyen extends Component {
             isLoading: true,
         });
 
-
         var sURL = await url_UyQuyen_List();
         await fetch(sURL, {
             method: "POST",
@@ -123,9 +123,9 @@ class AGMUyQuyen extends Component {
                 return res.json();
             })
             .then(response => {
-                console.log("url_UyQuyen_List", response);
+                console.log("url_UyQuyen_List", response.Data.length);
                 if (response.State == true) {
-                    this.setState({ lstUyQuyen: response.Data});
+                    this.setState({ lstUyQuyen: response.Data });
                 } else {
 
                 }
@@ -140,31 +140,6 @@ class AGMUyQuyen extends Component {
                 });
             });
 
-        // let data = {
-        //     CommentContent: '111',
-        //     UserName: 'dunghoang',
-        //     UserId: '12',
-        //     LessionId: 22,
-        //     CreatedBy: 'thanh'
-        //   };
-        //   var result = await fetch('http://apil5.vnittech.com/api/Bookmark/AddQuestion/7C383E6B-C314-4F82-FB66-08D85E1AAA5E/22/dunghoang', {
-        //     method: 'POST',
-        //     headers: {
-        //       'Accept': 'application/json',
-        //       'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify(data)
-        //   })
-        //     .then((res) => res.json())
-        //     .then(resJson => {
-
-        //       console.log("urlApiSendComment", resJson);
-
-        //     })
-        //     .catch(e => {
-        //       console.log("ex", e);
-        //     });
-
     }
 
     goCourse = (course) => {
@@ -173,41 +148,6 @@ class AGMUyQuyen extends Component {
         // this.props.nav.navigate('Course');
     }
 
-    // renderPrice(o, n) {
-    //     var dis = Number(o) - Number(n);
-    //     if (dis > 0.001) {
-    //         return (
-    //             <View style={{ flexDirection: 'row' }}>
-    //                 <View> 
-    //                     <NumberFormat value={n}
-    //                         renderText={(value) => <TakeerText style={{
-    //                             color: Colors.textPrimary,
-    //                         }} >{value}</TakeerText>}
-    //                         displayType={'text'} thousandSeparator={true} suffix={' VNĐ'} />
-    //                 </View>
-    //                 <View style={{ paddingLeft: 8 }}> 
-    //                     <NumberFormat value={o}
-    //                         renderText={(value) => <TakeerText style={{
-    //                             color: Colors.textPrimary,
-    //                             textDecorationLine: 'line-through',
-    //                             textDecorationColor: Colors.textSecondary,
-    //                         }}>{value}</TakeerText>}
-    //                         displayType={'text'} thousandSeparator={true} suffix={' VNĐ'} />
-    //                 </View>
-    //             </View>
-    //         )
-    //     } else {
-    //         return (
-    //             <View> 
-    //                 <NumberFormat value={o}
-    //                     renderText={(value) => <TakeerText style={{
-    //                         color: Colors.textPrimary,
-    //                     }} >{value}</TakeerText>}
-    //                     displayType={'text'} thousandSeparator={true} suffix={' VNĐ'} />
-    //             </View>
-    //         )
-    //     }
-    // }
 
     render() {
 
@@ -235,7 +175,7 @@ class AGMUyQuyen extends Component {
                                     backgroundColor: 'rgba(255,255,255,0.03)',
                                     borderRadius: 4
                                 }]} onPress={() => this.goCourse(v)}>
-                                    <View style={[Styles.latestImage, {justifyContent: 'center', alignItems: 'center'}]}>
+                                    <View style={[Styles.latestImage, { justifyContent: 'center', alignItems: 'center' }]}>
                                         {/* <Image source={v.cover} style={Styles.latestCover}
                                             resizeMethod="scale"
                                         /> */}
@@ -297,7 +237,24 @@ class AGMUyQuyen extends Component {
                     />
 
                 </Fab>
+
+
+                <NavigationEvents
+                    onWillFocus={payload => {
+                        console.log('11111111', payload);
+                        this.componentDidMount();
+                    }}
+                    onDidBlur={payload => {
+                        console.log('22222222', payload);
+                        this.setState({
+                            itemPhieuCongTac: undefined,
+                        });
+                    }}
+                />
+
             </SafeAreaView>
+
+
         );
     }
 

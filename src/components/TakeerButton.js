@@ -5,8 +5,9 @@ import { View, Image, TouchableOpacity } from 'react-native';
 //custom component
 import TakeerIcon from './TakeerIcon';
 import TakeerText from './TakeerText';
+import LinearGradient from 'react-native-linear-gradient';
 
-
+import { Colors, Styles, Images, Fonts } from '../Common';
 /*
     //USAGE
       <TakeerButton
@@ -146,8 +147,21 @@ class TakeerButton extends Component {
 
     render() {
         return (
-            <TouchableOpacity onPress={this.props.onPress}>                           
-                <View style={{
+            <TouchableOpacity onPress={this.props.onPress}>  
+            <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={[Colors.green, Colors.separator, Colors.vcb]}
+            style={{
+                    padding:4,
+                    paddingHorizontal: this.paddingHorizontal(),
+                    borderWidth: this.borderWidth(),
+                    marginTop:6,
+                    marginRight:0,
+                    backgroundColor:this.props.backgroundColor,
+                    borderRadius: this.borderRadius(),
+                    borderColor:this.props.borderColor
+                    }}>
+            {this.renderView()}
+                </LinearGradient>                         
+                {/* <View style={{
                     padding:4,
                     paddingHorizontal: this.paddingHorizontal(),
                     borderWidth: this.borderWidth(),
@@ -158,7 +172,7 @@ class TakeerButton extends Component {
                     borderColor:this.props.borderColor
                     }}>
                     {this.renderView()}
-                </View>
+                </View> */}
             </TouchableOpacity>
         );
     }

@@ -5,15 +5,58 @@ const serverApiBaseUrl = 'http://10.10.171.190/AGMService/Help';
 
 import AsyncStorage from '@react-native-community/async-storage';
 
-// const ipserver = AsyncStorage.getItem("ipserver");
+//CoDong
+export const url_CoDong_MACD = async () => {
+    var ipserver = await AsyncStorage.getItem("ipserver");
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/codong/getinfo/bymacd";
+    return url;
+}
+export const url_CoDong_SODKSH = async () => {
+    var ipserver = await AsyncStorage.getItem("ipserver");
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/codong/getinfo/bydksh";
+    return url;
+}
 
 // Uy quyen
 export const url_UyQuyen_List = async () => {
     var ipserver = await AsyncStorage.getItem("ipserver");
     var url = "http://" + ipserver + "/AGMService/api/v1/agm/uyquyen/list";
-    console.log('ip', ipserver, url);
     return url;
-} 
+}
+export const url_UyQuyen_Them = async () => {
+    var ipserver = await AsyncStorage.getItem("ipserver");
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/uyquyen/add";
+    return url;
+}
+
+
+// Checkin
+export const url_Checkin_List = async () => {
+    var ipserver = await AsyncStorage.getItem("ipserver");
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/checkin/list";
+    return url;
+}
+export const url_Checkin_Them = async () => {
+    var ipserver = await AsyncStorage.getItem("ipserver");
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/checkin/add";
+    return url;
+}
+
+export const url_Checkin_MACD = async () => {
+    var ipserver = await AsyncStorage.getItem("ipserver");
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/checkin/getinfo/bymacd";
+    return url;
+}
+export const url_Checkin_SODKSH = async () => {
+    var ipserver = await AsyncStorage.getItem("ipserver");
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/checkin/getinfo/bydksh";
+    return url;
+}
+export const url_Checkin_HASHCODE = async () => {
+    var ipserver = await AsyncStorage.getItem("ipserver");
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/checkin/getinfo/byhash";
+    return url;
+}
 
  
 

@@ -14,7 +14,16 @@ import { Styles, Fonts, Colors, Images } from '../../Common';
 import TakeerIcon from '../../components/TakeerIcon';
 import styles from './styles';
 import TakeerButton from '../../components/TakeerButton';
+import { url_Checkin_HASHCODE, url_Checkin_MACD, url_Checkin_SODKSH, url_Checkin_Them } from '../../Global';
 
+import * as actions from '../../actions';
+import { connect } from 'react-redux';
+import {
+
+    Label,
+    CheckBox,
+
+} from "native-base";
 
 
 
@@ -25,10 +34,13 @@ class ThucHienCheckin extends Component {
         super(props);
         this.state = {
             margin_bottom: 10, dgQR: false,
-
+            inGop: false,
             scan: false,
             ScanResult: false,
-            result: null
+            result: null,
+
+            macodong: '',
+            sodksh: ''
         }
     }
 
@@ -59,19 +71,171 @@ class ThucHienCheckin extends Component {
         this.setState({ dgQR: true, scan: true })
     };
 
-    onSuccess = (e) => {
+    onSuccess = async (e) => {
         const check = e.data.substring(0, 4);
 
         alert(e.data);
         console.log('scanned data' + e.data);
-        this.setState({
+        await this.setState({
             result: e.data,
             scan: false,
-            ScanResult: true, 
+            ScanResult: true,
             macodong: e.data,
             dgQR: false
-        }) 
+        });
 
+        await this.setState({
+            isLoading: true,
+        });
+
+        var data = {};
+        var sURL = await url_Checkin_HASHCODE();
+        data = {
+            HASCODE: e.data
+        };
+        await fetch(sURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "username": this.props.agm.userAGM.userName,
+                "token": this.props.agm.userAGM.signInToken
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => {
+                return res.json();
+            })
+            .then(response => {
+                console.log("url_Checkin_HASHCODE", response.Data);
+                if (response.State == true) {
+                    this.setState({
+                        sodksh: response.Data.SODKSH,
+                        macodong: response.Data.MA_CODONG,
+                        SOCP_SOHUU: response.Data.SOCP_SOHUU + '',
+                        SOCP_UQ: response.Data.SOCP_SOHUU + '',
+                        HOTEN: response.Data.HOTEN,
+                    });
+
+                } else {
+                    alert('Tìm kiếm không thành công')
+                }
+                this.setState({
+                    isLoading: false
+                });
+            })
+            .catch(e => {
+                console.log('exp', e)
+                this.setState({
+                    isLoading: false
+                });
+            });
+    }
+
+    toggleSwitch1 = async () => {
+        this.setState({
+            inGop: !this.state.inGop
+        });
+    }
+
+
+    btnTimKiem = async () => {
+        await this.setState({
+            isLoading: true,
+        });
+
+        var data = {};
+        var sURL = '';
+        if (this.state.macodong != '') {
+            sURL = await url_Checkin_MACD();
+            data = {
+                MA_CODONG: this.state.macodong
+            }
+        }
+        else if (this.state.sodksh != '') {
+            sURL = await url_Checkin_SODKSH();
+            data = {
+                SODKSH: this.state.sodksh
+            }
+        }
+        console.log('data tk', data)
+        await fetch(sURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "username": this.props.agm.userAGM.userName,
+                "token": this.props.agm.userAGM.signInToken
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => {
+                return res.json();
+            })
+            .then(response => {
+                console.log("url_CoDong_xxx", response.Data);
+                if (response.State == true) {
+                    this.setState({
+                        sodksh: response.Data.SODKSH,
+                        macodong: response.Data.MA_CODONG + '',
+                        SOCP_SOHUU: response.Data.SOCP_SOHUU + '',
+                        SOCP_UQ: response.Data.SOCP_DUOCUQ + '',
+                        HOTEN: response.Data.HOTEN,
+                    });
+
+                } else {
+                    alert('Tìm kiếm không thành công')
+                }
+                this.setState({
+                    isLoading: false
+                });
+            })
+            .catch(e => {
+                console.log('exp', e)
+                this.setState({
+                    isLoading: false
+                });
+            });
+    }
+
+    btnCheckIn = async () => {
+
+        console.log('this.state.inGop', this.state.inGop)
+        await this.setState({
+            isLoading: true,
+        });
+        var sURL = await url_Checkin_Them();
+        var data = {
+            CMT: this.state.sodksh,
+            IN_GOP: this.state.inGop == false ? 0 : 1
+        };
+        await fetch(sURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "username": this.props.agm.userAGM.userName,
+                "token": this.props.agm.userAGM.signInToken
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => {
+                return res.json();
+            })
+            .then(response => {
+                console.log("url_Checkin_Them", response);
+                if (response.State == true) {
+                    alert('Thành công')
+                } else {
+                    alert(response.Message);
+                }
+                this.setState({
+                    isLoading: false
+                });
+            })
+            .catch(e => {
+                console.log('exp', e)
+                this.setState({
+                    isLoading: false
+                });
+            });
     }
 
     render() {
@@ -165,7 +329,7 @@ class ThucHienCheckin extends Component {
                             />
                             <View style={{ marginTop: 5 }}>
                                 <TakeerButton
-                                    onPress={this.btnLuyenTap}
+                                    onPress={this.btnTimKiem}
                                     backgroundColor={Colors.green}
                                     padding={15}
                                     borderWidth={1}
@@ -206,7 +370,7 @@ class ThucHienCheckin extends Component {
 
 
                             <View style={{ marginVertical: 5 }}></View>
-                            <TakeerText style={styles.normalText}>Người uỷ quyền</TakeerText>
+                            <TakeerText style={styles.normalText}>Họ tên</TakeerText>
                             <TextInput
                                 editable={false}
                                 placeholder="..."
@@ -236,8 +400,9 @@ class ThucHienCheckin extends Component {
                                 ref='SOCP_SOHUU'
                             />
                             <View style={{ marginVertical: 5 }}></View>
-                            <TakeerText style={styles.normalText}>Số cổ phần uỷ quyền</TakeerText>
+                            <TakeerText style={styles.normalText}>Số cổ phần được uỷ quyền</TakeerText>
                             <TextInput
+                                editable={false}  
                                 placeholder="..."
                                 placeholderTextColor={Colors.textSecondary}
                                 textColor={Colors.textWhite}
@@ -250,39 +415,15 @@ class ThucHienCheckin extends Component {
                                 ref='SOCP_UQ'
                                 returnKeyType='next'
                             />
-                            <View style={{ marginVertical: 5 }}></View>
-                            <TakeerText style={styles.normalText}>Người được uỷ quyền</TakeerText>
-                            <TextInput
-                                placeholder="..."
-                                placeholderTextColor={Colors.textSecondary}
-                                textColor={Colors.textWhite}
-                                underlineColorAndroid="transparent"
-                                keyboardType='default'
-                                style={styles.input}
-                                value={this.state.NGUOIDUOC_UQ}
-                                onChangeText={(NGUOIDUOC_UQ) => this.setState({ NGUOIDUOC_UQ })}
-                                onSubmitEditing={() => this.refs.NGUOIDUOC_UQ.focus()}
-                                ref='NGUOIDUOC_UQ'
-                                returnKeyType='next'
-                            />
-                            <View style={{ marginVertical: 5 }}></View>
-                            <TakeerText style={styles.normalText}>CMT người được uỷ quyền</TakeerText>
-                            <TextInput
-                                placeholder="..."
-                                placeholderTextColor={Colors.textSecondary}
-                                textColor={Colors.textWhite}
-                                underlineColorAndroid="transparent"
-                                keyboardType="default"
-                                style={styles.input}
-                                value={this.state.CMTDUOC_UQ}
-                                onChangeText={(CMTDUOC_UQ) => this.setState({ CMTDUOC_UQ })}
-                                onSubmitEditing={() => this.refs.CMTDUOC_UQ.focus()}
-                                ref='CMTDUOC_UQ'
-                                returnKeyType='done'
-                            />
+                            <View style={{ flexDirection: 'row', marginTop: 20, marginLeft: -5 }}>
+                                <CheckBox style={{ marginRight: 30 }} checked={this.state.inGop}
+                                    onPress={() => this.toggleSwitch1()} color="yellow" />
+                                <TakeerText style={styles.normalText}>In gộp</TakeerText>
+                            </View>
+
                         </ScrollView>
                         <TakeerButton
-                            onPress={this.btnLuyenTap}
+                            onPress={this.btnCheckIn}
                             backgroundColor={Colors.green}
                             padding={15}
                             borderWidth={1}
@@ -414,4 +555,8 @@ class ThucHienCheckin extends Component {
     }
 }
 
-export default ThucHienCheckin;
+const mapStateToProps = (state) => ({
+    settings: state.settings,
+    agm: state.agm
+})
+export default connect(mapStateToProps, actions)(ThucHienCheckin);

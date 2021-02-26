@@ -22,8 +22,10 @@ import OrientationLoadingOverlay from 'react-native-orientation-loading-overlay'
 // import { urlApiGetKhoaHoc, urlServerImage, urlApiGetThongTinUser } from './../../Global';
 // import { urlApiGetDanhMucKhoaHoc } from '../../Global'; 
 
+import { NavigationEvents } from "react-navigation";
 import TakeerIcon from './../../components/TakeerIcon';
 import { Fab } from 'native-base';
+import { url_UyQuyen_List, url_Checkin_List } from '../../Global';
 var BUTTONS = [
     { text: "Tiếng Anh", icon: "american-football", iconColor: "#2c8ef4", value: "en-US" },
     { text: "Tiếng Tây Ban Nha", icon: "american-football", iconColor: "#ddd2ac", value: "es-ES" },
@@ -83,7 +85,7 @@ class Checkin extends Component {
         super(props);
         this.state = {
             isLoading: false,
-
+            lstCheckin: []
         };
     }
 
@@ -103,44 +105,39 @@ class Checkin extends Component {
     loadInitialState = async () => {
         StatusBar.setHidden(true);
 
+        await this.setState({
+            isLoading: true,
+        });
 
-        // await this.setState({
-        //     isLoading: true,
-        // });
+        var sURL = await url_Checkin_List();
+        await fetch(sURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "username": this.props.agm.userAGM.userName,
+                "token": this.props.agm.userAGM.signInToken
+            }
+        })
+            .then(res => {
+                return res.json();
+            })
+            .then(response => {
+                console.log("url_Checkin_List", response.Data);
+                if (response.State == true) {
+                    this.setState({ lstCheckin: response.Data });
+                } else {
 
-        // fetch(urlApiGetKhoaHoc("-1"))
-        //     .then((res) => {
-        //         if (res.ok) {
-        //             return res.json();
-        //         } else {
-        //             if (this._isMounted) {
-        //                 this.setState({
-        //                     lstKhoaHoc: [],
-        //                     isLoading: false,
-        //                 });
-        //             }
-        //         }
-        //     })
-        //     .then((resJson) => {
-
-        //         if (this._isMounted) {
-        //             if (resJson.State) {
-        //                 this.setState({
-        //                     lstKhoaHoc: resJson.Data.Results,
-        //                     isLoading: false,
-        //                 });
-        //                 console.log('lstKhoaHoc', resJson.Data.Results);
-        //             }
-        //         }
-        //     })
-        //     .catch((error) => {
-        //         if (this._isMounted) {
-        //             this.setState({
-        //                 lstKhoaHoc: [],
-        //                 isLoading: false,
-        //             });
-        //         }
-        //     });
+                }
+                this.setState({
+                    isLoading: false
+                });
+            })
+            .catch(e => {
+                console.log('exp', e)
+                this.setState({
+                    isLoading: false
+                });
+            });
     }
 
     goCourse = (course) => {
@@ -148,42 +145,7 @@ class Checkin extends Component {
         // this.props.broadcastITEM_KHOAHOC(course);
         // this.props.nav.navigate('Course');
     }
-
-    // renderPrice(o, n) {
-    //     var dis = Number(o) - Number(n);
-    //     if (dis > 0.001) {
-    //         return (
-    //             <View style={{ flexDirection: 'row' }}>
-    //                 <View> 
-    //                     <NumberFormat value={n}
-    //                         renderText={(value) => <TakeerText style={{
-    //                             color: Colors.textPrimary,
-    //                         }} >{value}</TakeerText>}
-    //                         displayType={'text'} thousandSeparator={true} suffix={' VNĐ'} />
-    //                 </View>
-    //                 <View style={{ paddingLeft: 8 }}> 
-    //                     <NumberFormat value={o}
-    //                         renderText={(value) => <TakeerText style={{
-    //                             color: Colors.textPrimary,
-    //                             textDecorationLine: 'line-through',
-    //                             textDecorationColor: Colors.textSecondary,
-    //                         }}>{value}</TakeerText>}
-    //                         displayType={'text'} thousandSeparator={true} suffix={' VNĐ'} />
-    //                 </View>
-    //             </View>
-    //         )
-    //     } else {
-    //         return (
-    //             <View> 
-    //                 <NumberFormat value={o}
-    //                     renderText={(value) => <TakeerText style={{
-    //                         color: Colors.textPrimary,
-    //                     }} >{value}</TakeerText>}
-    //                     displayType={'text'} thousandSeparator={true} suffix={' VNĐ'} />
-    //             </View>
-    //         )
-    //     }
-    // }
+ 
 
     render() {
 
@@ -207,7 +169,7 @@ class Checkin extends Component {
                         <View>
 
 
-                            {Featured.map((v, i) => (
+                            {this.state.lstCheckin.map((v, i) => (
                                 <TouchableOpacity key={`${i}-latest`} style={[Styles.latestHolder, {
                                     backgroundColor: Colors.opacity,
                                     borderRadius: 4
@@ -222,19 +184,19 @@ class Checkin extends Component {
                                    
                                         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                                             
-                                            <TakeerText style={Styles.latestTitle}>{v.title}</TakeerText>
-                                            <TakeerText style={Styles.latestTitle}>SL in: 13</TakeerText>
+                                            <TakeerText style={Styles.latestTitle}>{v.CMT}</TakeerText>
+                                            {/* <TakeerText style={Styles.latestTitle}>SL in: {v.SOLAN_IN}</TakeerText> */}
                                             {/* <View style={{ alignItems: 'center' }}>
                                             <TakeerText style={Styles.latestTitle}>{v.title}</TakeerText>
                                             </View> */}
                                         </View>
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 8 }}>
                                             <View>
-                                                <TakeerText style={Styles.latestListH}>215</TakeerText>
+                                                <TakeerText style={Styles.latestListH}>{v.SOCP_SOHUU}</TakeerText>
                                                 <TakeerText style={Styles.latestListB}>Số CP sở hữu</TakeerText>
                                             </View>
                                             <View>
-                                                <TakeerText style={Styles.latestListH}>14</TakeerText>
+                                                <TakeerText style={Styles.latestListH}>{v.SOCP_DUOCUQ}</TakeerText>
                                                 <TakeerText style={Styles.latestListB}>Số CP được UQ</TakeerText>
                                             </View>
                                         </View>
@@ -277,6 +239,19 @@ class Checkin extends Component {
                     />
 
                 </Fab>
+           
+                <NavigationEvents
+                    onWillFocus={payload => {
+                        console.log('11111111', payload);
+                        this.componentDidMount();
+                    }}
+                    onDidBlur={payload => {
+                        console.log('22222222', payload);
+                        this.setState({
+                            itemPhieuCongTac: undefined,
+                        });
+                    }}
+                />
             </SafeAreaView>
         );
     }
@@ -285,6 +260,6 @@ class Checkin extends Component {
 
 const mapStateToProps = (state) => ({
     settings: state.settings,
-    language5: state.language5
+    agm: state.agm
 })
 export default connect(mapStateToProps, actions)(Checkin);

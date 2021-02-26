@@ -249,11 +249,22 @@ backgroundLogin: {
     backgroundColor: "rgba(0,0,0,0.1)",
     justifyContent: 'center'
   },
+  backgroundView: {
+    flex: 1,
+    width: null,
+    height: null,
+    backgroundColor:  Colors.secondary
+  },
   containerNoHeader: {
     // paddingTop: 40,
     flex: 1,
     paddingHorizontal: 8,
     backgroundColor: Colors.secondary
+  },
+  containerNoHeaderImage: {
+    // paddingTop: 40,
+    flex: 1,
+    paddingHorizontal: 8,
   },
   containerAfterHeader: {
     flex: 1,
