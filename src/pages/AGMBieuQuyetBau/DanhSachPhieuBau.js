@@ -26,67 +26,14 @@ import Dialog from "react-native-dialog";
 import { NavigationEvents } from "react-navigation";
 import TakeerIcon from './../../components/TakeerIcon';
 import { Fab } from 'native-base';
-import { url_UyQuyen_List, url_Checkin_List, url_Checkin_InLai } from '../../Global';
-var BUTTONS = [
-    { text: "Tiếng Anh", icon: "american-football", iconColor: "#2c8ef4", value: "en-US" },
-    { text: "Tiếng Tây Ban Nha", icon: "american-football", iconColor: "#ddd2ac", value: "es-ES" },
-    { text: "Tiếng Nhật", icon: "analytics", iconColor: "#f42ced", value: "ja-JP" },
-    { text: "Tiếng Hàn", icon: "aperture", iconColor: "#ea943b", value: "ko-KO" },
-    { text: "Tiếng Trung", icon: "american-football", iconColor: "#3aabcc", value: "vi-VN" },
-    // { text: "Tiếng Hàn", icon: "aperture", iconColor: "#22cab1", value: "zh-ZH" },
-];
-// Id   Name
-// en-US    Tiếng Anh
-// es-ES    Tiếng Tây Ban Nha
-// ja-JP    Tiếng Nhật
-// ko-KO    Tiếng Hàn
-// vi-VN    Tiếng Trung
-// zh-ZH    Tiếng Trung
-var DESTRUCTIVE_INDEX = 3;
-var CANCEL_INDEX = 4;
-
-var Featured = [
-    {
-        title: 'Đỗ Quốc Anh - 92829293',
-        curPrice: 12.99,
-        oldPrice: 19.99,
-        cover: Images.business,
-        isFeatured: true,
-        category: 'Business'
-    },
-    {
-        title: 'Nguyễn Anh Tuấn - 092829921',
-        curPrice: 16.99,
-        oldPrice: 20.99,
-        cover: Images.guitar,
-        isFeatured: false,
-        category: 'Technology'
-    },
-    {
-        title: 'Trịnh Văn Thanh - 02928383',
-        curPrice: 10.98,
-        oldPrice: 10.98,
-        cover: Images.medicine,
-        isFeatured: true,
-        category: 'Design'
-    },
-    {
-        title: 'Technology for Enthusiast',
-        curPrice: 200.5,
-        oldPrice: 222.8,
-        cover: Images.guitar,
-        isFeatured: true,
-        category: 'Business'
-    }
-];
-
-class Checkin extends Component {
+import { url_UyQuyen_List, url_DanhSachPhieuBau_List } from '../../Global';
+class DanhSachPhieuBau extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             isLoading: false,
-            lstCheckin: [],
+            lstDanhSachPhieuBau: [],
             dgLyDoInLai: false,
             txtLyDoInLai: '',
             MA_CODONG: ''
@@ -113,7 +60,7 @@ class Checkin extends Component {
             isLoading: true,
         });
 
-        var sURL = await url_Checkin_List();
+        var sURL = await url_DanhSachPhieuBau_List();
         await fetch(sURL, {
             method: "POST",
             headers: {
@@ -126,9 +73,9 @@ class Checkin extends Component {
                 return res.json();
             })
             .then(response => {
-                console.log("url_Checkin_List", response.Data);
+                console.log("url_DanhSachPhieuBau_List", response.Data);
                 if (response.State == true) {
-                    this.setState({ lstCheckin: response.Data });
+                    this.setState({ lstDanhSachPhieuBau: response.Data });
                 } else {
 
                 }
@@ -150,79 +97,35 @@ class Checkin extends Component {
         // this.props.nav.navigate('Course');
     }
 
-    handleCancel = () => {
-        this.setState({
-            dgLyDoInLai: false,  
-        });
-    };
-
-    handleOK = async () => {
-        await this.setState({
-            isLoading: true,
-            dgLyDoInLai: false 
-        });
-        var sURL = await url_Checkin_InLai();
-        var data = {
-            MA_CODONG: this.state.MA_CODONG,
-            REASON: this.state.txtLyDoInLai
-        };
-        await fetch(sURL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "username": this.props.agm.userAGM.userName,
-                "token": this.props.agm.userAGM.signInToken
-            },
-            body: JSON.stringify(data)
-        })
-            .then(res => {
-                return res.json();
-            })
-            .then(response => {
-                console.log("url_Checkin_InLai", response);
-                if (response.State == true) {
-                    alert('Thành công');
-                    this.componentDidMount();
-                } else {
-                    alert(response.Message);
-                }
-                this.setState({
-                    isLoading: false
-                });
-            })
-            .catch(e => {
-                console.log('exp', e)
-                this.setState({
-                    isLoading: false
-                });
-            });
-    }
-
-    btnInLai = (MA_CODONG) => { 
-        this.setState({
-            dgLyDoInLai: true,  
-            MA_CODONG: MA_CODONG
-        });
-    }
 
     render() {
 
         // const lstKhoaHoc = this.props.language5.listKhoaHoc;
 
         return (
-            // <SafeAreaView style={Styles.safeArea}>
-            // <View style={{flex:1, backgroundColor:Colors.secondary}}>
-            //     <Header navigation={this.props.navigation}/>
-            //     <View style={{flex:1, paddingHorizontal:8}}>
-            //         <TTabNavigator />
-            //     </View>
-            // </View>
-            // </SafeAreaView>
 
             <SafeAreaView style={Styles.safeArea}>
 
                 <View style={{ flex: 1, backgroundColor: Colors.secondary }}>
-                    <Header navigation={this.props.navigation} />
+                    <View style={Styles.appHeader}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
+                                <View style={{ padding: 4 }}>
+                                    <TakeerIcon
+                                        iconType="Feather"
+                                        iconName="arrow-left"
+                                        iconSize={30}
+                                        iconColor={Colors.primaryAccent}
+                                        iconPosition="" //left, right, null
+                                    />
+                                </View>
+                            </TouchableOpacity>
+                            <View style={{ flexGrow: 1, alignItems: 'flex-start' }}>
+                                <TakeerText style={Styles.headerTitle}>Danh sách phiếu bầu</TakeerText>
+                            </View>
+
+                        </View>
+                    </View>
                     <ImageBackground
                         source={require("../../assets/images/night2.jpg")}
                         style={Styles.backgroundView}>
@@ -230,7 +133,7 @@ class Checkin extends Component {
 
                             <View>
 
-                                {this.state.lstCheckin.map((v, i) => (
+                                {this.state.lstDanhSachPhieuBau.map((v, i) => (
                                     <TouchableOpacity key={`${i}-latest`} style={[Styles.latestHolder, {
                                         // backgroundColor: Colors.opacity,
                                         borderRadius: 4,
@@ -238,29 +141,29 @@ class Checkin extends Component {
                                         alignItems: 'center'
 
                                     }]} onPress={() => this.goCourse(v)}>
-                                        {/* <TakeerText style={Styles.latestTitle}>{i + 1}.</TakeerText> */}
+                                        <TakeerText style={Styles.latestTitle}>{i + 1}.</TakeerText>
 
                                         <View style={[Styles.latestContentHolder, { flex: 1 }]}>
 
-                                            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
 
-                                                <TakeerText style={Styles.latestTitle}>{v.CMT}</TakeerText>
+                                                <TakeerText style={Styles.latestTitle}>{v.TEN_UVIEN}</TakeerText>
                                                 {/* <TakeerText style={Styles.latestTitle}>In {v.SOLAN_IN} lần </TakeerText>  */}
                                             </View>
                                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 8 }}>
                                                 <View>
-                                                    <TakeerText style={Styles.latestListH}>{v.SOCP_SOHUU}</TakeerText>
-                                                    <TakeerText style={Styles.latestListB}>CP sở hữu</TakeerText>
+                                                    <TakeerText style={Styles.latestListH}>{v.SODKSH}</TakeerText>
+                                                    <TakeerText style={Styles.latestListB}>Số ĐKSH</TakeerText>
                                                 </View>
                                                 <View>
-                                                    <TakeerText style={Styles.latestListH}>{v.SOCP_DUOCUQ}</TakeerText>
-                                                    <TakeerText style={Styles.latestListB}>CP được UQ</TakeerText>
+                                                    <TakeerText style={Styles.latestListH}>{v.SOPHIEUBAU}</TakeerText>
+                                                    <TakeerText style={Styles.latestListB}>Số phiếu bầu</TakeerText>
                                                 </View>
-                                                <View>
+                                                {/* <View>
                                                     <TakeerText style={Styles.latestListH}>{v.SOLAN_IN}</TakeerText>
                                                     <TakeerText style={Styles.latestListB}>SL In</TakeerText>
-                                                </View>
-                                                <TouchableOpacity onPress={() => this.btnInLai(v.MA_CODONG)} style={{alignItems: 'center'}}>
+                                                </View> */}
+                                                {/* <TouchableOpacity onPress={() => this.btnInLai(v.MA_CODONG)} style={{ alignItems: 'center' }}>
                                                     <TakeerIcon
                                                         iconType="MaterialCommunityIcons"
                                                         iconName="printer-wireless"
@@ -268,7 +171,7 @@ class Checkin extends Component {
                                                         iconColor={Colors.textWhite}
                                                     />
                                                     <TakeerText style={Styles.latestListB}>In lại</TakeerText>
-                                                </TouchableOpacity>
+                                                </TouchableOpacity> */}
                                             </View>
                                             <View style={{ flexDirection: 'row', marginVertical: 3 }}>
                                                 <View style={Styles.itm}>
@@ -311,46 +214,12 @@ class Checkin extends Component {
                     </View>
                 </OrientationLoadingOverlay>
 
-                <Fab
-                    active={true}
-                    direction="up"
-                    containerStyle={{}}
-                    style={{ backgroundColor: Colors.textWhite }}
-                    position="bottomRight"
-                    onPress={() => {
-                        this.props.navigation.navigate('ThucHienCheckin');
-                    }}>
-
-                    <TakeerIcon
-                        iconType="MaterialCommunityIcons"
-                        iconName="qrcode"
-                        iconSize={24}
-                        iconColor={Colors.vcb}
-                    />
-
-                </Fab>
-
-                <Dialog.Container visible={this.state.dgLyDoInLai}>
-                    <Dialog.Title>Xác nhận</Dialog.Title>
-                    <Dialog.Description>
-                        Anh/Chị điền lý do in lại cho cổ đông này ?
-                        </Dialog.Description>
-
-                    <Dialog.Input value={this.state.txtLyDoInLai} style={{ color: "#000" }}
-                        onChangeText={(txtLyDoInLai) => this.setState({ txtLyDoInLai })}></Dialog.Input>
-                    <Dialog.Button label="Hủy" onPress={this.handleCancel} />
-                    <Dialog.Button label="Đồng ý" onPress={() => this.handleOK()} />
-                </Dialog.Container>
-
                 <NavigationEvents
                     onWillFocus={payload => {
-                        console.log('11111111', payload);
                         this.componentDidMount();
                     }}
                     onDidBlur={payload => {
-                        console.log('22222222', payload);
                         this.setState({
-                            itemPhieuCongTac: undefined,
                         });
                     }}
                 />
@@ -364,4 +233,4 @@ const mapStateToProps = (state) => ({
     settings: state.settings,
     agm: state.agm
 })
-export default connect(mapStateToProps, actions)(Checkin);
+export default connect(mapStateToProps, actions)(DanhSachPhieuBau);

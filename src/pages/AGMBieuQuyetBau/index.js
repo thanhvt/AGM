@@ -111,7 +111,7 @@ class AGMBieuQuyetBau extends Component {
                 screen: props => <NhanSu lstTuVung={this.state.lstNhanSu} {...props} nav={this.props.navigation} />,
                 navigationOptions: {
                     header: null,
-                    title: 'Bầu củ nhân sự',
+                    title: 'Bầu cử nhân sự',
                 },
             }
             

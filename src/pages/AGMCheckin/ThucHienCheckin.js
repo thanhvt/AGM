@@ -14,7 +14,7 @@ import { Styles, Fonts, Colors, Images } from '../../Common';
 import TakeerIcon from '../../components/TakeerIcon';
 import styles from './styles';
 import TakeerButton from '../../components/TakeerButton';
-import { url_Checkin_HASHCODE, url_Checkin_MACD, url_Checkin_SODKSH, url_Checkin_Them } from '../../Global';
+import { url_Checkin_HASHCODE, url_Checkin_MACD, url_Checkin_SODKSH, url_Checkin_Them, url_Checkin_Them_ByMaCD } from '../../Global';
 
 import * as actions from '../../actions';
 import { connect } from 'react-redux';
@@ -74,13 +74,13 @@ class ThucHienCheckin extends Component {
     onSuccess = async (e) => {
         const check = e.data.substring(0, 4);
 
-        alert(e.data);
-        console.log('scanned data' + e.data);
+        // alert(e.data);
+        console.log('scanned data ' + e.data);
         await this.setState({
             result: e.data,
             scan: false,
             ScanResult: true,
-            macodong: e.data,
+            // macodong: e.data,
             dgQR: false
         });
 
@@ -91,7 +91,7 @@ class ThucHienCheckin extends Component {
         var data = {};
         var sURL = await url_Checkin_HASHCODE();
         data = {
-            HASCODE: e.data
+            HASHCODE: e.data
         };
         await fetch(sURL, {
             method: "POST",
@@ -110,7 +110,7 @@ class ThucHienCheckin extends Component {
                 if (response.State == true) {
                     this.setState({
                         sodksh: response.Data.SODKSH,
-                        macodong: response.Data.MA_CODONG,
+                        macodong: response.Data.MA_CODONG + '',
                         SOCP_SOHUU: response.Data.SOCP_SOHUU + '',
                         SOCP_UQ: response.Data.SOCP_SOHUU + '',
                         HOTEN: response.Data.HOTEN,
@@ -197,12 +197,17 @@ class ThucHienCheckin extends Component {
     }
 
     btnCheckIn = async () => {
-
         console.log('this.state.inGop', this.state.inGop)
         await this.setState({
             isLoading: true,
         });
-        var sURL = await url_Checkin_Them();
+        var sURL;
+        if (this.state.macodong != '') {
+            sURL = await url_Checkin_Them_ByMaCD();
+        }
+        else {
+            sURL = await url_Checkin_Them();
+        }
         var data = {
             CMT: this.state.sodksh,
             IN_GOP: this.state.inGop == false ? 0 : 1
@@ -227,7 +232,9 @@ class ThucHienCheckin extends Component {
                     alert(response.Message);
                 }
                 this.setState({
-                    isLoading: false
+                    isLoading: false,
+                    macodong: '',
+                    sodksh: ''
                 });
             })
             .catch(e => {
@@ -340,7 +347,7 @@ class ThucHienCheckin extends Component {
                                     textItalic={false}
                                     textSize={16}
                                     textFont=""
-                                    text="HOẶC GÕ 1 TRONG 2 ĐỂ TÌM KIẾM" //button texts
+                                    text="HOẶC CHỈ GÕ 1 TRONG 2 ĐỂ TÌM KIẾM" //button texts
                                     showIcon={false} // if false, pass null to every icon attribute below
                                     iconType="Ionicons" //Ionicons,Entypo, EvilIcons, FontAwesome, MaterialCommunityIcons, MaterialIcons, Octicons, SimpleLineIcons, Zocial, null
                                     iconName="md-send" //icon name according to iconType or pass null to hide

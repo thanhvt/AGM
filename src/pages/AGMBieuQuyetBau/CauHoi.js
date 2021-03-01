@@ -25,6 +25,7 @@ import OrientationLoadingOverlay from 'react-native-orientation-loading-overlay'
 import TakeerIcon from './../../components/TakeerIcon';
 import { Fab } from 'native-base';
 import styles from './styles';
+import { url_Question_List } from '../../Global';
 var BUTTONS = [
     { text: "Tiếng Anh", icon: "american-football", iconColor: "#2c8ef4", value: "en-US" },
     { text: "Tiếng Tây Ban Nha", icon: "american-football", iconColor: "#ddd2ac", value: "es-ES" },
@@ -101,6 +102,7 @@ class CauHoi extends Component {
         super(props);
         this.state = {
             isLoading: false,
+            lstCauHoi: []
 
         };
     }
@@ -121,29 +123,63 @@ class CauHoi extends Component {
     loadInitialState = async () => {
         StatusBar.setHidden(true);
 
- 
+        await this.setState({
+            isLoading: true,
+        });
+
+        var sURL = await url_Question_List();
+        await fetch(sURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "username": this.props.agm.userAGM.userName,
+                "token": this.props.agm.userAGM.signInToken
+            }
+        })
+            .then(res => {
+                return res.json();
+            })
+            .then(response => {
+                console.log("url_Question_List", response.Data);
+                if (response.State == true) {
+                    this.setState({ lstCauHoi: response.Data });
+                } else {
+
+                }
+                this.setState({
+                    isLoading: false
+                });
+            })
+            .catch(e => {
+                console.log('exp', e)
+                this.setState({
+                    isLoading: false
+                });
+            });
     }
 
     goCourse = (course) => {
-       
+
     }
- 
+
+    btnBieuQuyetCauHoi = (ID_CAUHOI, KETQUA, NOIDUNG, STT) => { 
+        this.props.nav.navigate('BieuQuyetCauHoi', {
+            ID_CAUHOI: ID_CAUHOI,
+            KETQUA: KETQUA,
+            NOIDUNG: NOIDUNG,
+            STT: STT
+        });
+    }
 
     render() {
 
-        // const lstKhoaHoc = this.props.language5.listKhoaHoc;
-
         return (
-           
-
             <SafeAreaView style={Styles.safeArea}>
                 <View style={{ flex: 1, backgroundColor: Colors.secondary }}>
                     <ScrollView style={Styles.containerAfterHeader}>
 
                         <View>
-
-
-                            {Featured.map((v, i) => (
+                            {this.state.lstCauHoi.map((v, i) => (
                                 <TouchableOpacity key={`${i}-latest`} style={[Styles.latestHolder, {
                                     backgroundColor: Colors.opacity,
                                     borderRadius: 4,
@@ -152,7 +188,28 @@ class CauHoi extends Component {
                                     <View style={[Styles.latestContentHolder, { flex: 1 }]}>
 
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                            <TakeerText style={styles.latestTitle}>{v.title}</TakeerText>
+                                            <TakeerText style={styles.latestTitle}>{v.NOIDUNG}</TakeerText>
+                                        </View>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 8, paddingVertical: 5 }}>
+                                            <TouchableOpacity onPress={() => this.btnBieuQuyetCauHoi(v.Id, 0, v.NOIDUNG, i + 1)} style={{alignItems: 'center'}}>
+                                                <TakeerIcon
+                                                    iconType="Foundation"
+                                                    iconName="dislike"
+                                                    iconSize={30}
+                                                    iconColor={Colors.bgGG}
+                                                />
+                                                <TakeerText style={Styles.normalTextBlack}>Không đồng ý</TakeerText>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={() => this.btnBieuQuyetCauHoi(v.Id, 2, v.NOIDUNG, i + 1)} style={{alignItems: 'center'}}>
+                                                <TakeerIcon
+                                                    iconType="MaterialCommunityIcons"
+                                                    iconName="comment-plus"
+                                                    iconSize={30}
+                                                    iconColor={Colors.yellowish}
+                                                />
+                                                <TakeerText style={Styles.normalTextBlack}>Ý kiến khác</TakeerText>
+                                            </TouchableOpacity>
+
                                         </View>
                                     </View>
                                 </TouchableOpacity>
@@ -175,7 +232,7 @@ class CauHoi extends Component {
                     </View>
                 </OrientationLoadingOverlay>
 
-                <Fab
+                {/* <Fab
                     active={true}
                     direction="up"
                     containerStyle={{}}
@@ -192,7 +249,7 @@ class CauHoi extends Component {
                         iconColor={Colors.vcb}
                     />
 
-                </Fab>
+                </Fab> */}
             </SafeAreaView>
         );
     }
@@ -201,6 +258,6 @@ class CauHoi extends Component {
 
 const mapStateToProps = (state) => ({
     settings: state.settings,
-    language5: state.language5
+    agm: state.agm
 })
 export default connect(mapStateToProps, actions)(CauHoi);

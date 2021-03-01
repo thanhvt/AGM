@@ -49,7 +49,8 @@ import Checkin from './pages/AGMCheckin';
 import ThucHienCheckin from './pages/AGMCheckin/ThucHienCheckin';
 import BieuQuyetCauHoi from './pages/AGMBieuQuyetBau/BieuQuyetCauHoi';
 import AGMBieuQuyetBau from './pages/AGMBieuQuyetBau';
-
+import BauCuNhanSu from './pages/AGMBieuQuyetBau/BauCuNhanSu';
+import DanhSachPhieuBau from './pages/AGMBieuQuyetBau/DanhSachPhieuBau';
 //////////////////////////////////////////////////
 /////////////////// NAVIGATORS ///////////////////
 //Tab Navigator for Home and Settings Screen
@@ -187,6 +188,12 @@ const MasterNavigator = createAppContainer(createStackNavigator({
     },
     BieuQuyetCauHoi: {
         screen: BieuQuyetCauHoi
+    },
+    BauCuNhanSu: {
+        screen: BauCuNhanSu
+    },
+    DanhSachPhieuBau: {
+        screen: DanhSachPhieuBau
     },
     ThucHienCheckin: {
         screen: ThucHienCheckin

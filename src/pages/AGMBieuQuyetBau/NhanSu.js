@@ -19,23 +19,12 @@ import { StatusBar } from 'react-native';
 import OrientationLoadingOverlay from 'react-native-orientation-loading-overlay';
 // import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 // import { createAppContainer } from 'react-navigation';
-// import { urlApiGetKhoaHoc, urlServerImage, urlApiGetThongTinUser } from './../../Global';
-// import { urlApiGetDanhMucKhoaHoc } from '../../Global'; 
+// import { url_NhanSu_List, urlServerImage, urlApiGetThongTinUser } from './../../Global';
+import { url_NhanSu_List } from '../../Global'; 
 
 import TakeerIcon from './../../components/TakeerIcon';
 import { Fab } from 'native-base';
-import styles from './styles';
-var BUTTONS = [
-    { text: "Tiếng Anh", icon: "american-football", iconColor: "#2c8ef4", value: "en-US" },
-    { text: "Tiếng Tây Ban Nha", icon: "american-football", iconColor: "#ddd2ac", value: "es-ES" },
-    { text: "Tiếng Nhật", icon: "analytics", iconColor: "#f42ced", value: "ja-JP" },
-    { text: "Tiếng Hàn", icon: "aperture", iconColor: "#ea943b", value: "ko-KO" },
-    { text: "Tiếng Trung", icon: "american-football", iconColor: "#3aabcc", value: "vi-VN" },
-    // { text: "Tiếng Hàn", icon: "aperture", iconColor: "#22cab1", value: "zh-ZH" },
-];
-var DESTRUCTIVE_INDEX = 3;
-var CANCEL_INDEX = 4;
-
+import styles from './styles'; 
 var Featured = [
     {
         title: 'Tăng vốn điều lệ giai đoạn 2020 - 2025. Đồng thời tăng lượng cổ đông',
@@ -101,6 +90,8 @@ class NhanSu extends Component {
         super(props);
         this.state = {
             isLoading: false,
+            lstNhom: [],
+            lstNhanSu: []
 
         };
     }
@@ -120,12 +111,61 @@ class NhanSu extends Component {
 
     loadInitialState = async () => {
         StatusBar.setHidden(true);
+        await this.setState({
+            isLoading: true,
+        });
 
+        var sURL = await url_NhanSu_List();
+        await fetch(sURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "username": this.props.agm.userAGM.userName,
+                "token": this.props.agm.userAGM.signInToken
+            }
+        })
+            .then(res => {
+                return res.json();
+            })
+            .then(async response => {
+                console.log("url_NhanSu_List", response.Data);
+                if (response.State == true) {
+                    var resArr = [];
+                    response.Data.forEach(e => {
+                        var i = resArr.findIndex(x => x.NHOM_TV == e.NHOM_TV);
+                        // console.log()
+                        if (i <= -1) {
+                            resArr.push({ NHOM_TV: e.NHOM_TV, TEN_NHOM: e.TEN_NHOM });
+                        }
+                    })
+
+                    await this.setState({ lstNhom: resArr, lstNhanSu: response.Data });
+                    console.log('lstNhom', resArr);
+
+                } else {
+
+                }
+                this.setState({
+                    isLoading: false
+                });
+            })
+            .catch(e => {
+                console.log('exp', e)
+                this.setState({
+                    isLoading: false
+                });
+            });
  
     }
 
-    goCourse = (course) => {
-       
+    goVote = (nhom) => {
+        var lstNhanSu = this.state.lstNhanSu.filter(c => c.NHOM_TV == nhom.NHOM_TV);
+        console.log('ns bau', lstNhanSu);
+        this.props.nav.navigate('BauCuNhanSu', {
+            NHOM_TV: nhom.NHOM_TV,
+            TEN_NHOM: nhom.TEN_NHOM,
+            LST_NHANSU: lstNhanSu
+        });
     }
  
 
@@ -143,16 +183,16 @@ class NhanSu extends Component {
                         <View>
 
 
-                            {Featured.map((v, i) => (
+                            {this.state.lstNhom.map((v, i) => (
                                 <TouchableOpacity key={`${i}-latest`} style={[Styles.latestHolder, {
                                     backgroundColor: Colors.opacity,
                                     borderRadius: 4,
-                                }]} onPress={() => this.goCourse(v)}>
+                                }]} onPress={() => this.goVote(v)}>
                                     <TakeerText style={[styles.latestTitle, { marginLeft: 5 }]}>{i + 1}.</TakeerText>
                                     <View style={[Styles.latestContentHolder, { flex: 1 }]}>
 
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                            <TakeerText style={styles.latestTitle}>{v.title}</TakeerText>
+                                            <TakeerText style={styles.latestTitle}>{v.TEN_NHOM}</TakeerText>
                                         </View>
                                     </View>
                                 </TouchableOpacity>
@@ -175,7 +215,7 @@ class NhanSu extends Component {
                     </View>
                 </OrientationLoadingOverlay>
 
-                <Fab
+                {/* <Fab
                     active={true}
                     direction="up"
                     containerStyle={{}}
@@ -192,7 +232,7 @@ class NhanSu extends Component {
                         iconColor={Colors.vcb}
                     />
 
-                </Fab>
+                </Fab> */}
             </SafeAreaView>
         );
     }
@@ -201,6 +241,6 @@ class NhanSu extends Component {
 
 const mapStateToProps = (state) => ({
     settings: state.settings,
-    language5: state.language5
+    agm: state.agm
 })
 export default connect(mapStateToProps, actions)(NhanSu);

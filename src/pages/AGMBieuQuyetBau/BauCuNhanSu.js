@@ -19,10 +19,10 @@ import AsyncStorage from '@react-native-community/async-storage';
 import * as actions from '../../actions';
 import { connect } from 'react-redux';
 
-import { url_Checkin_HASHCODE, url_Checkin_MACD, url_Checkin_SODKSH, url_Answer_ThemLo, url_Answer_ThemLe } from '../../Global';
+import { url_Checkin_HASHCODE, url_Checkin_MACD, url_Checkin_SODKSH, url_NhanSu_ThemLo, url_Answer_ThemLe } from '../../Global';
 const { width, height } = Dimensions.get('window')
 
-class BieuQuyetCauHoi extends Component {
+class BauCuNhanSu extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -38,7 +38,8 @@ class BieuQuyetCauHoi extends Component {
 
             macodong: '',
             sodksh: '',
-            lstBQHangDoi: []
+            lstNhanSu: [],
+            lstSoCPBau: []
         }
     }
 
@@ -78,27 +79,18 @@ class BieuQuyetCauHoi extends Component {
 
 
         await this.setState({
-            ID_CAUHOI: item.ID_CAUHOI,
-            NOIDUNG: item.NOIDUNG,
-            KETQUA: item.KETQUA,
-            STT: item.STT
+            NHOM_TV: item.NHOM_TV,
+            TEN_NHOM: item.TEN_NHOM,
+            lstNhanSu: item.LST_NHANSU
         });
         await this.setState({
             isLoading: true,
         });
 
 
-        // ThanhVT khi lấy hàng đợị lọc theo KHÔNG ĐỒNG Ý | KHÁC
-        var LIST_BIEUQUYETCAUHOI = await AsyncStorage.getItem("LIST_BIEUQUYETCAUHOI");
-        var lstBQHangDoi = [];
-        if (LIST_BIEUQUYETCAUHOI != undefined && LIST_BIEUQUYETCAUHOI != null) {
-            lstBQHangDoi = JSON.parse(LIST_BIEUQUYETCAUHOI);
-            console.log("lstBQHangDoi ", lstBQHangDoi, item);
-            lstBQHangDoi = lstBQHangDoi.filter(c => c.KETQUA == item.KETQUA && c.ID_CAUHOI == item.ID_CAUHOI);
-        };
+
         await this.setState({
             isLoading: false,
-            lstBQHangDoi: lstBQHangDoi
         });
 
     }
@@ -167,46 +159,28 @@ class BieuQuyetCauHoi extends Component {
 
     }
 
-    btnHangDoi = async () => {
-        await this.setState({
-            isLoading: true,
-        });
-
-        var LIST_BIEUQUYETCAUHOI = await AsyncStorage.getItem("LIST_BIEUQUYETCAUHOI");
-        var lstBQHangDoi = [];
-        if (LIST_BIEUQUYETCAUHOI != undefined && LIST_BIEUQUYETCAUHOI != null) {
-            lstBQHangDoi = JSON.parse(LIST_BIEUQUYETCAUHOI)
-        };
-
-        var item = {
-            "MA_CODONG": this.state.macodong,
-            "SODKSH": this.state.sodksh,
-            "SOCP_SOHUU": this.state.SOCP_SOHUU,
-            "ID_CAUHOI": this.state.ID_CAUHOI,
-            "ND_CAUHOI": this.state.NOIDUNG,
-            "KETQUA": this.state.KETQUA,
-            "YKIENKHAC": "",
-            "HOTEN": this.state.HOTEN
-        };
-        lstBQHangDoi.push(item);
-        await AsyncStorage.setItem('LIST_BIEUQUYETCAUHOI', JSON.stringify(lstBQHangDoi));
-        await this.setState({
-            lstBQHangDoi: lstBQHangDoi,
-            macodong: '',
-            sodksh: ''
-        });
-        alert('Thành công')
-    }
 
     btnGuiBQ = async () => {
+       
+
         await this.setState({
             isLoading: true,
         });
-        var sURL = await url_Answer_ThemLo();
-        var data = this.state.lstBQHangDoi;
-
+        var sURL = await url_NhanSu_ThemLo();
+        var data = this.state.lstNhanSu;
+        var dataPush = [];
+        data.forEach((element, index) => {
+            dataPush.push({
+                "MA_CODONG": this.state.macodong,
+                "SODKSH": this.state.sodksh,
+                "SOCP_SOHUU" : this.state.SOCP_SOHUU,
+                "ID_NHANSU" : element.ID_NHANSU,
+                "SOPHIEUBAU" : this.state.lstSoCPBau[index],
+                "KIEU_BAU" : this.state.NHOM_TV
+            })   
+        });
         var dataPush = {
-            BieuQuyetList: this.state.lstBQHangDoi
+            PHIEU_BAU: dataPush
         };
         console.log('data push', dataPush);
         await fetch(sURL, {
@@ -222,56 +196,7 @@ class BieuQuyetCauHoi extends Component {
                 return res.json();
             })
             .then(response => {
-                console.log("url_Answer_ThemLo", response);
-                if (response.State == true) {
-                    alert('Thành công');
-                    // ThanhVT xoá trong hàng đợi
-                } else {
-                    alert(response.Message);
-                }
-                this.setState({
-                    isLoading: false,
-                    macodong: '',
-                    sodksh: ''
-                });
-            })
-            .catch(e => {
-                console.log('exp', e)
-                this.setState({
-                    isLoading: false
-                });
-            });
-    }
-
-    btnGuiNgay = async () => {
-        await this.setState({
-            isLoading: true,
-        });
-        var sURL = await url_Answer_ThemLe();
-        var dataPush = {
-            "MA_CODONG": this.state.macodong,
-            "SODKSH": this.state.sodksh,
-            "SOCP_SOHUU": this.state.SOCP_SOHUU,
-            "ID_CAUHOI": this.state.ID_CAUHOI,
-            "ND_CAUHOI": this.state.NOIDUNG,
-            "KETQUA": this.state.KETQUA,
-            "YKIENKHAC": ""
-        };
-        console.log('data push', dataPush);
-        await fetch(sURL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "username": this.props.agm.userAGM.userName,
-                "token": this.props.agm.userAGM.signInToken
-            },
-            body: JSON.stringify(dataPush)
-        })
-            .then(res => {
-                return res.json();
-            })
-            .then(response => {
-                console.log("url_Answer_ThemLe", response);
+                console.log("url_NhanSu_ThemLo", response);
                 if (response.State == true) {
                     alert('Thành công');
                 } else {
@@ -351,7 +276,7 @@ class BieuQuyetCauHoi extends Component {
 
     render() {
 
-        const { scan, ScanResult, result, KETQUA, STT, NOIDUNG } = this.state
+        const { scan, ScanResult, result, NHOM_TV, TEN_NHOM } = this.state
 
         return (
             <ImageBackground
@@ -376,30 +301,27 @@ class BieuQuyetCauHoi extends Component {
                                 </TouchableOpacity>
                                 <View>
                                     <TakeerText style={{ textAlign: 'center', fontWeight: 'bold', color: Colors.textPrimary }}>
-                                        Biếu quyết câu hỏi số {STT}
-                                    </TakeerText>
-                                    <TakeerText style={{ textAlign: 'center', color: Colors.textPrimary, fontSize: 10 }}>
-                                        {KETQUA == 0 ? "Không đồng ý" : "Khác"}
+                                        Bầu cử {TEN_NHOM}
                                     </TakeerText>
                                 </View>
-                                <View>
-                                    {/* <Image source={Images.users.user1} style={{
-                                    width: 30, height: 30, borderRadius: 15
-                                }} /> */}
-                                    <TakeerIcon
-                                        iconType="FontAwesome"
-                                        iconName="list"
-                                        iconSize={30}
-                                        iconColor={Colors.primaryAccent}
-                                        iconPosition="" //left, right, null
-                                    />
-                                </View>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('DanhSachPhieuBau')}>
+                                    <View>
+                                        <TakeerIcon
+                                            iconType="FontAwesome"
+                                            iconName="list"
+                                            iconSize={30}
+                                            iconColor={Colors.primaryAccent}
+                                            iconPosition="" //left, right, null
+                                        />
+                                    </View>
+                                </TouchableOpacity>
+                                
                             </View>
 
                             <ScrollView>
-                                <TakeerText style={{ textAlign: 'center', color: Colors.textPrimary, fontSize: 16 }}>
-                                    {NOIDUNG}
-                                </TakeerText>
+                                {/* <TakeerText style={{ textAlign: 'center', color: Colors.textPrimary, fontSize: 16 }}>
+                                    123
+                                </TakeerText> */}
                                 {/* Time Separator */}
                                 <TakeerButton
                                     onPress={this.btnQRCODE}
@@ -525,57 +447,6 @@ class BieuQuyetCauHoi extends Component {
                                     onSubmitEditing={() => this.refs.SOCP_SOHUU.focus()}
                                     ref='SOCP_SOHUU'
                                 />
-                                <View style={{ flexDirection: 'row', paddingHorizontal: 0, marginTop: 10 }}>
-                                    <View style={{ flex: 1 }}>
-                                        <TakeerButton
-                                            onPress={this.btnGuiNgay}
-                                            backgroundColor={Colors.green}
-                                            padding={15}
-                                            borderWidth={1}
-                                            borderRadius={5}
-                                            borderColor="transparent"
-                                            textColor="#fff"
-                                            textBold={false}
-                                            textItalic={false}
-                                            textSize={16}
-                                            textFont=""
-                                            text={"BIỂU QUYẾT NGAY"} //button texts
-                                            showIcon={false} // if false, pass null to every icon attribute below
-                                            iconType="Ionicons" //Ionicons,Entypo, EvilIcons, FontAwesome, MaterialCommunityIcons, MaterialIcons, Octicons, SimpleLineIcons, Zocial, null
-                                            iconName="md-send" //icon name according to iconType or pass null to hide
-                                            iconSize={30}
-                                            iconColor="#fff"
-                                            iconPosition="right" //left, right, null
-                                            loading={false} //true or false -- true to show spinner/loading
-                                            loadingText="" // default is Loading.., you may pass any texts or null not to show
-                                        />
-                                    </View>
-                                    <View style={{ marginHorizontal: 5 }}></View>
-                                    <View style={{ flex: 1 }}>
-                                        <TakeerButton
-                                            onPress={this.btnHangDoi}
-                                            backgroundColor={Colors.green}
-                                            padding={15}
-                                            borderWidth={1}
-                                            borderRadius={5}
-                                            borderColor="transparent"
-                                            textColor="#fff"
-                                            textBold={false}
-                                            textItalic={false}
-                                            textSize={16}
-                                            textFont=""
-                                            text={"THÊM HÀNG ĐỢI"} //button texts
-                                            showIcon={false} // if false, pass null to every icon attribute below
-                                            iconType="Ionicons" //Ionicons,Entypo, EvilIcons, FontAwesome, MaterialCommunityIcons, MaterialIcons, Octicons, SimpleLineIcons, Zocial, null
-                                            iconName="md-send" //icon name according to iconType or pass null to hide
-                                            iconSize={30}
-                                            iconColor="#fff"
-                                            iconPosition="right" //left, right, null
-                                            loading={false} //true or false -- true to show spinner/loading
-                                            loadingText="" // default is Loading.., you may pass any texts or null not to show
-                                        />
-                                    </View>
-                                </View>
                                 <View style={{ flexDirection: 'row', marginVertical: 6 }}>
                                     <View style={Styles.itm}>
                                         <View style={Styles.itb} />
@@ -596,10 +467,10 @@ class BieuQuyetCauHoi extends Component {
                                     color: Colors.textPrimary,
                                     fontSize: 18, marginTop: 10, fontWeight: 'bold'
                                 }}>
-                                    Danh sách hàng đợi ({this.state.lstBQHangDoi.length})
+                                    Danh sách nhân sự bầu
                                 </TakeerText>
 
-                                {this.state.lstBQHangDoi.map((v, i) => (
+                                {this.state.lstNhanSu.map((v, i) => (
                                     <TouchableOpacity key={`${i}-latest`} style={[Styles.latestHolder, {
                                         borderRadius: 4,
                                         alignContent: 'center',
@@ -609,9 +480,34 @@ class BieuQuyetCauHoi extends Component {
 
                                         <View style={[Styles.latestContentHolder, { flex: 1 }]}>
 
-                                            <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
-                                                <TakeerText style={Styles.latestTitle}>{i + 1}. </TakeerText>
-                                                <TakeerText style={Styles.latestTitle}>{v.SODKSH} - {v.HOTEN}</TakeerText>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+                                                <View style={{ flex: 3, flexDirection: 'row' }}>
+                                                    <TakeerText style={Styles.latestTitle}>{i + 1}. </TakeerText>
+                                                    <TakeerText style={Styles.latestTitle}>{v.TEN_UVIEN}</TakeerText>
+                                                </View>
+                                                <View style={{ flex: 1 }}>
+                                                    <TextInput
+                                                        placeholder="..."
+                                                        placeholderTextColor={Colors.textSecondary}
+                                                        textColor={Colors.textWhite}
+                                                        underlineColorAndroid="transparent"
+                                                        keyboardType="numeric"
+                                                        style={styles.input}
+                                                        value={this.state.lstSoCPBau[i]}
+                                                        onChangeText={(SOPHIEUBAU) => {
+                                                            // this.setState({ SOCP_SOHUU })
+                                                            let newValue = [... this.state.lstSoCPBau];
+                                                            newValue[i] = SOPHIEUBAU;
+                                                            this.setState({ lstSoCPBau: newValue })
+                                                        }
+                                                        }
+                                                        onSubmitEditing={() => this.refs.SOPHIEUBAU.focus()}
+                                                        ref='SOPHIEUBAU'
+                                                    />
+                                                </View>
+
+
+
                                             </View>
 
                                             <View style={{ flexDirection: 'row', marginVertical: 3 }}>
@@ -634,6 +530,7 @@ class BieuQuyetCauHoi extends Component {
                                     </TouchableOpacity>
                                 ))}
 
+
                             </ScrollView>
                             <TakeerButton
                                 onPress={this.btnGuiBQ}
@@ -647,7 +544,7 @@ class BieuQuyetCauHoi extends Component {
                                 textItalic={false}
                                 textSize={16}
                                 textFont=""
-                                text={"GỬI BIỂU QUYẾT " + (KETQUA == 0 ? "KHÔNG ĐỒNG Ý" : "KHÁC")} //button texts
+                                text={"GỬI PHIẾU BẦU"} //button texts
                                 showIcon={false} // if false, pass null to every icon attribute below
                                 iconType="Ionicons" //Ionicons,Entypo, EvilIcons, FontAwesome, MaterialCommunityIcons, MaterialIcons, Octicons, SimpleLineIcons, Zocial, null
                                 iconName="md-send" //icon name according to iconType or pass null to hide
@@ -718,18 +615,18 @@ class BieuQuyetCauHoi extends Component {
                                         ref={(node) => { this.scanner = node }}
                                         onRead={this.onSuccess}
 
-                                        bottomContent={
-                                            <View>
-                                                <TouchableOpacity style={styles.buttonTouchable} onPress={() => this.scanner.reactivate()}>
-                                                    <Text style={styles.buttonTextStyle}>OK. Got it!</Text>
-                                                </TouchableOpacity>
+                                    // bottomContent={
+                                    //     <View>
+                                    //         <TouchableOpacity style={styles.buttonTouchable} onPress={() => this.scanner.reactivate()}>
+                                    //             <Text style={styles.buttonTextStyle}>OK. Got it!</Text>
+                                    //         </TouchableOpacity>
 
-                                                <TouchableOpacity style={styles.buttonTouchable} onPress={() => this.setState({ scan: false })}>
-                                                    <Text style={styles.buttonTextStyle}>Stop Scan</Text>
-                                                </TouchableOpacity>
-                                            </View>
+                                    //         <TouchableOpacity style={styles.buttonTouchable} onPress={() => this.setState({ scan: false })}>
+                                    //             <Text style={styles.buttonTextStyle}>Stop Scan</Text>
+                                    //         </TouchableOpacity>
+                                    //     </View>
 
-                                        }
+                                    // }
                                     />
                                     }
                                 </View>
@@ -774,4 +671,4 @@ const mapStateToProps = (state) => ({
     settings: state.settings,
     agm: state.agm
 })
-export default connect(mapStateToProps, actions)(BieuQuyetCauHoi);
+export default connect(mapStateToProps, actions)(BauCuNhanSu);

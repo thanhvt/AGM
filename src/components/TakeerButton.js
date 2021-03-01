@@ -60,7 +60,7 @@ class TakeerButton extends Component {
         if(this.props.textWeight){
             return this.props.textWeight;
         }else{
-            return 'normal';
+            return 'bold';
         }
     }
 
@@ -148,7 +148,7 @@ class TakeerButton extends Component {
     render() {
         return (
             <TouchableOpacity onPress={this.props.onPress}>  
-            <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={[Colors.green, Colors.separator, Colors.vcb]}
+            <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={[Colors.first, Colors.mid, Colors.last]}
             style={{
                     padding:4,
                     paddingHorizontal: this.paddingHorizontal(),

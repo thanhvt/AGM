@@ -42,6 +42,16 @@ export const url_Checkin_Them = async () => {
     return url;
 }
 
+export const url_Checkin_Them_ByMaCD = async () => {
+    var ipserver = await AsyncStorage.getItem("ipserver");
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/checkin/bymacd/add";
+    return url;
+}
+export const url_Checkin_InLai = async () => {
+    var ipserver = await AsyncStorage.getItem("ipserver");
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/checkin/reprint";
+    return url;
+}
 export const url_Checkin_MACD = async () => {
     var ipserver = await AsyncStorage.getItem("ipserver");
     var url = "http://" + ipserver + "/AGMService/api/v1/agm/checkin/getinfo/bymacd";
@@ -58,7 +68,48 @@ export const url_Checkin_HASHCODE = async () => {
     return url;
 }
 
- 
+// Câu hỏi biểu quyết
+export const url_Question_List = async () => {
+    var ipserver = await AsyncStorage.getItem("ipserver");
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/question/list";
+    return url;
+}
+export const url_Answer_ThemLo = async () => {
+    var ipserver = await AsyncStorage.getItem("ipserver");
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/answer/addList";
+    return url;
+}
+export const url_Answer_ThemLe = async () => {
+    var ipserver = await AsyncStorage.getItem("ipserver");
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/answer/add";
+    return url;
+}
+
+// Bầu cử nhân sự
+export const url_NhanSu_List = async () => {
+    var ipserver = await AsyncStorage.getItem("ipserver");
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/vote/people/list";
+    return url;
+}
+export const url_NhanSu_ThemLo = async () => {
+    var ipserver = await AsyncStorage.getItem("ipserver");
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/vote/addList";
+    return url;
+}
+export const url_NhanSu_DaBau = async () => {
+    var ipserver = await AsyncStorage.getItem("ipserver");
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/answer/addList";
+    return url;
+}
+export const url_DanhSachPhieuBau_List = async () => {
+    var ipserver = await AsyncStorage.getItem("ipserver");
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/vote/list";
+    return url;
+}
+
+
+
+
 
 export const urlApiLogin = `${serverApiBaseUrl}/Account/LoginAGM`;
 export const urlApiRegister = `${serverApiBaseUrl}/api/Account/Register`;

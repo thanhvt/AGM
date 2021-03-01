@@ -185,7 +185,10 @@ const Colors = {
   gray: '#4d4747',
   opacity: '#dcdbdb',
   cyan: '#00ebc0',
-  bgTab: "rgba(1,26,7,255)"
+  bgTab: "rgba(1,26,7,255)",
+  first: "#5bb322",
+  mid: "#2e9829",
+  last: "#037e2f"
 };
 
 
@@ -481,7 +484,7 @@ backgroundLogin: {
     textAlign: 'center'
   },
   latestListB: {
-    color: Colors.textSecondary,
+    color: Colors.textWhite,
     textAlign: 'center'
   },
 
@@ -569,6 +572,11 @@ backgroundLogin: {
   },
   normalText: {
     color: Colors.textPrimary,
+    fontSize: 16,
+    // fontFamily: 'BaiJamjuree-SemiBold',
+  },
+  normalTextBlack: {
+    color: Colors.primaryLight,
     fontSize: 16,
     // fontFamily: 'BaiJamjuree-SemiBold',
   },

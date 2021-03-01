@@ -146,7 +146,9 @@ class UyQuyen extends Component {
                     alert(response.Message);
                 }
                 this.setState({
-                    isLoading: false
+                    isLoading: false,
+                    macodong: '',
+                    sodksh: ''
                 });
             })
             .catch(e => {

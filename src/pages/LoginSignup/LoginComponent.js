@@ -34,7 +34,7 @@ class LoginComponent extends Component {
       loggedIn: false,
       username: '',
       password: '',
-      ipserver: '',
+      ipserver: '10.10.171.190',
       isLoading: false,
     };
   }
@@ -64,66 +64,68 @@ class LoginComponent extends Component {
       }
       else {
 
-        // this.setState({
-        //   isLoading: true,
-        // });
+        this.setState({
+          isLoading: true,
+        });
 
-        // const body = new FormData();
-        // body.append('usernameOrEmailAddress', this.state.username);
-        // body.append('password', this.state.password);
-        // var urlLogin = "http://" + this.state.ipserver + "/Account/LoginAGM";
+        const body = new FormData();
+        body.append('usernameOrEmailAddress', this.state.username);
+        body.append('password', this.state.password);
+        var urlLogin = "http://" + this.state.ipserver + "/AGMWeb/Account/LoginAGM";
 
-        // fetch(urlLogin, {
-        //   method: 'POST',
-        //   body: body
-        // })
-        //   .then((res) => {
-        //     return res.text();
-        //   })
-        //   .then(async response => {
+        fetch(urlLogin, {
+          method: 'POST',
+          body: body
+        })
+          .then((res) => {
+            return res.json();
+          })
+          .then(async response => {
 
-        //     console.log(response);
-        //     if (response.success == true) {
-        //       await this.setState({
-        //         username: null,
-        //         password: null,
-        //         isLoading: false,
-        //       });
-        //       await AsyncStorage.setItem('user', JSON.stringify(response.result));
-        //       await AsyncStorage.setItem('token', 'response.result.signInToken');
-        //       this.props.isConnected();
-        //     } else {
-        //       Alert.alert("Thông báo", "Đăng nhập không thành công !");
-        //       await this.setState({
-        //         isLoading: false,
-        //       });
-        //     };
+            console.log(response);
+            if (response.success == true) {
+              await this.setState({
+                username: null,
+                password: null,
+                isLoading: false,
+              });
+              await AsyncStorage.setItem('user', JSON.stringify(response.result));
+              await AsyncStorage.setItem('token', 'response.result.signInToken');
+              await AsyncStorage.setItem('username', 'response.result.userName');
+              await AsyncStorage.setItem('ipserver', this.state.ipserver);
+              this.props.isConnected();
+            } else {
+              Alert.alert("Thông báo", "Đăng nhập không thành công !");
+              await this.setState({
+                isLoading: false,
+              });
+            };
 
-        //   })
-        //   .catch(e => {
-        //     console.log('network err', e)
-        //     this.setState({
-        //       isLoading: false,
-        //     });
-        //     Alert.alert('Kết nối máy chủ không thành công');
-        //   }); 
+          })
+          .catch(e => {
+            console.log('network err', e)
+            this.setState({
+              isLoading: false,
+            });
+            Alert.alert('Kết nối máy chủ không thành công');
+          }); 
 
-        var response = {
-          result: {
-            name: 'Thành',
-            userName: 'testdhcd',
-            signInToken: 'd8b4e705-b8a5-4a71-952b-4fc8e4f7c182',
-            qrCodeSetupImageUrl: 'May in QLUD'
-          },
-          success: true
-        }
-        this.props.userAGM(response.result);
-        await AsyncStorage.setItem('user', JSON.stringify(response.result));
-        await AsyncStorage.setItem('username', 'response.result.userName');
-        await AsyncStorage.setItem('token', 'response.result.signInToken');
-        await AsyncStorage.setItem('ipserver', this.state.ipserver);
-        // ThanhVT check khi auto login lai
-        this.props.isConnected();
+        // var response = {
+        //   result: {
+        //     name: 'Thành',
+        //     userName: 'testdhcd',
+        //     signInToken: 'd8b4e705-b8a5-4a71-952b-4fc8e4f7c182',
+        //     qrCodeSetupImageUrl: 'May in QLUD'
+        //   },
+        //   success: true
+        // }
+        // this.props.userAGM(response.result);
+        // await AsyncStorage.setItem('user', JSON.stringify(response.result));
+        // await AsyncStorage.setItem('username', 'response.result.userName');
+        // await AsyncStorage.setItem('token', 'response.result.signInToken');
+        // await AsyncStorage.setItem('ipserver', this.state.ipserver);
+        // // ThanhVT check khi auto login lai
+        // this.props.isConnected();
       }
     } catch (error) {
       console.log(error)
