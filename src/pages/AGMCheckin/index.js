@@ -344,13 +344,10 @@ class Checkin extends Component {
 
                 <NavigationEvents
                     onWillFocus={payload => {
-                        console.log('11111111', payload);
                         this.componentDidMount();
                     }}
                     onDidBlur={payload => {
-                        console.log('22222222', payload);
                         this.setState({
-                            itemPhieuCongTac: undefined,
                         });
                     }}
                 />

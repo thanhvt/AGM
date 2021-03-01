@@ -202,16 +202,22 @@ class ThucHienCheckin extends Component {
             isLoading: true,
         });
         var sURL;
+        var data = {};
         if (this.state.macodong != '') {
             sURL = await url_Checkin_Them_ByMaCD();
+            data = {
+                MA_CODONG: this.state.macodong,
+                IN_GOP: this.state.inGop == false ? 0 : 1
+            };
         }
         else {
             sURL = await url_Checkin_Them();
+            data = {
+                CMT: this.state.sodksh,
+                IN_GOP: this.state.inGop == false ? 0 : 1
+            };
         }
-        var data = {
-            CMT: this.state.sodksh,
-            IN_GOP: this.state.inGop == false ? 0 : 1
-        };
+       
         await fetch(sURL, {
             method: "POST",
             headers: {
