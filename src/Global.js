@@ -36,9 +36,9 @@ export const url_Checkin_List = async () => {
     var url = "http://" + ipserver + "/AGMService/api/v1/agm/checkin/list";
     return url;
 }
-export const url_Checkin_Them = async () => {
+export const url_Checkin_Them_BySoDKSH = async () => {
     var ipserver = await AsyncStorage.getItem("ipserver");
-    var url = "http://" + ipserver + "/AGMService/api/v1/agm/checkin/add";
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/checkin/bycmt/add";
     return url;
 }
 

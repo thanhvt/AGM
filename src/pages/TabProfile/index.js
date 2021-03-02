@@ -51,7 +51,7 @@ class TabProfile extends Component {
                         </View>
                         <View>
                             <View>
-                                <TakeerText style={Styles.headerTitle}>Nimasha Perera</TakeerText>
+                                <TakeerText style={Styles.headerTitle}>{this.props.agm.userAGM.name}</TakeerText>
                             </View>
                             <View>
                                 <TakeerText style={{ fontSize: Fonts.size.h6, color: Colors.textSecondary }}>390,329 Points</TakeerText>
@@ -77,7 +77,7 @@ class TabProfile extends Component {
                         <TakeerText style={{
                             color: Colors.textSecondary,
                             fontSize: Fonts.size.h7
-                        }}>GENERAL</TakeerText>
+                        }}>Thông tin máy in</TakeerText>
                     </View>
                     <TouchableOpacity style={Styles.settingItem}>
                         <View style={Styles.settingIcon}>
@@ -85,7 +85,7 @@ class TabProfile extends Component {
                         </View>
                         <View style={Styles.settingContent}>
                             <View>
-                                <TakeerText style={Styles.settingLabel}>Favourite Courses</TakeerText>
+                                <TakeerText style={Styles.settingLabel}>{this.props.agm.userAGM.qrCodeSetupImageUrl}</TakeerText>
                             </View>
                             <TakeerIcon
                                 iconType="Entypo"
@@ -96,44 +96,7 @@ class TabProfile extends Component {
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={Styles.settingItem}>
-                        <View style={Styles.settingIcon}>
-                            <Image source={Images.icons.friends} />
-                        </View>
-                        <View style={Styles.settingContent}>
-                            <View>
-                                <TakeerText style={Styles.settingLabel}>My Friends</TakeerText>
-                            </View>
-                            <View style={{
-                                backgroundColor: Colors.primaryAccent,
-                                paddingHorizontal: 10,
-                                borderRadius: 30,
-                                paddingVertical: 2,
-                            }}>
-                                <TakeerText style={{ color: Colors.textPrimary }}>
-                                    50+
-                            </TakeerText>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={Styles.settingItem}>
-                        <View style={Styles.settingIcon}>
-                            <Image source={Images.icons.achieve} />
-                        </View>
-                        <View style={Styles.settingContent}>
-                            <View>
-                                <TakeerText style={Styles.settingLabel}>Achievements</TakeerText>
-                            </View>
-                            <TakeerIcon
-                                iconType="Entypo"
-                                iconName="chevron-small-right"
-                                iconSize={20}
-                                iconColor={Colors.textSecondary}
-                            />
-                        </View>
-                    </TouchableOpacity>
-
+                  
 
 
                     <View style={{ marginTop: 30, borderBottomWidth: 1, borderBottomColor: Colors.separator, paddingBottom: 6 }}>
@@ -142,39 +105,7 @@ class TabProfile extends Component {
                             fontSize: Fonts.size.h7
                         }}>SETTINGS</TakeerText>
                     </View>
-                    <TouchableOpacity style={Styles.settingItem}>
-                        <View style={Styles.settingIcon}>
-                            <Image source={Images.icons.key} />
-                        </View>
-                        <View style={Styles.settingContent}>
-                            <View>
-                                <TakeerText style={Styles.settingLabel}>Edit Login Details</TakeerText>
-                            </View>
-                            <TakeerIcon
-                                iconType="Entypo"
-                                iconName="chevron-small-right"
-                                iconSize={20}
-                                iconColor={Colors.textSecondary}
-                            />
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={Styles.settingItem}>
-                        <View style={Styles.settingIcon}>
-                            <Image source={Images.icons.interest} />
-                        </View>
-                        <View style={Styles.settingContent}>
-                            <View>
-                                <TakeerText style={Styles.settingLabel}>Update Interests</TakeerText>
-                            </View>
-                            <TakeerIcon
-                                iconType="Entypo"
-                                iconName="chevron-small-right"
-                                iconSize={20}
-                                iconColor={Colors.textSecondary}
-                            />
-                        </View>
-                    </TouchableOpacity>
+                   
 
                     {/* <TouchableOpacity style={Styles.settingItem} onPress={this.logout.bind(this)}>>
                     <View style={Styles.settingIcon}>
@@ -222,6 +153,7 @@ class TabProfile extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    settings: state.settings
+    settings: state.settings,
+    agm: state.agm
 })
 export default connect(mapStateToProps, actions)(TabProfile);

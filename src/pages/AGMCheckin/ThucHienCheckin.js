@@ -14,7 +14,7 @@ import { Styles, Fonts, Colors, Images } from '../../Common';
 import TakeerIcon from '../../components/TakeerIcon';
 import styles from './styles';
 import TakeerButton from '../../components/TakeerButton';
-import { url_Checkin_HASHCODE, url_Checkin_MACD, url_Checkin_SODKSH, url_Checkin_Them, url_Checkin_Them_ByMaCD } from '../../Global';
+import { url_Checkin_HASHCODE, url_Checkin_MACD, url_Checkin_SODKSH, url_Checkin_Them_BySoDKSH, url_Checkin_Them_ByMaCD } from '../../Global';
 
 import * as actions from '../../actions';
 import { connect } from 'react-redux';
@@ -211,7 +211,7 @@ class ThucHienCheckin extends Component {
             };
         }
         else {
-            sURL = await url_Checkin_Them();
+            sURL = await url_Checkin_Them_BySoDKSH();
             data = {
                 CMT: this.state.sodksh,
                 IN_GOP: this.state.inGop == false ? 0 : 1
@@ -231,7 +231,7 @@ class ThucHienCheckin extends Component {
                 return res.json();
             })
             .then(response => {
-                console.log("url_Checkin_Them", response);
+                console.log("url_Checkin_Them_BySoDKSH", response);
                 if (response.State == true) {
                     alert('Thành công')
                 } else {

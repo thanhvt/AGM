@@ -183,7 +183,7 @@ class TabHome extends Component {
                             ))}
                         </View>
 
-                        <View>
+                        {/* <View>
                             <TakeerText style={Styles.headerTitle}>Latest</TakeerText>
                         </View>
                         <View>
@@ -217,7 +217,7 @@ class TabHome extends Component {
                                     </View>
                                 </TouchableOpacity>
                             ))}
-                        </View>
+                        </View> */}
 
                     </ScrollView>
                 </View>
