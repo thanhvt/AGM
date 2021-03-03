@@ -13,7 +13,7 @@ import SignupComponent from './SignupComponent';
 import TakeerText from '../../components/TakeerText';
 import { Colors, Styles } from '../../Common';
 import { Container } from 'native-base';
-const bg = require("../../assets/images/bg.png");
+const bg = require("../../assets/images/bg.jpg");
 
 class index extends Component {
     constructor(props) {

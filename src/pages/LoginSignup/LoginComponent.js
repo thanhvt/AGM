@@ -142,7 +142,7 @@ class LoginComponent extends Component {
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
         <View style={[styles.iLogo, { flex: 1 }]}>
-          <TakeerText style={{ color: Colors.vcb, fontSize: 24 }}>ĐẠI HỘI CỔ ĐÔNG THƯỜNG NIÊN</TakeerText>
+          <TakeerText style={{ color: Colors.vcb, fontSize: 24, textAlign: 'center' }}>ĐẠI HỘI CỔ ĐÔNG THƯỜNG NIÊN</TakeerText>
           <Image source={require('../../assets/images/vcb.png')} resizeMode="center" />
         </View>
         <View style={{ flex: 2, justifyContent: 'space-between' }}>
