@@ -93,6 +93,7 @@ class LoginComponent extends Component {
               await AsyncStorage.setItem('token', 'response.result.signInToken');
               await AsyncStorage.setItem('username', 'response.result.userName');
               await AsyncStorage.setItem('ipserver', this.state.ipserver);
+              this.props.userAGM(response.result);
               this.props.isConnected();
             } else {
               Alert.alert("Thông báo", "Đăng nhập không thành công !");
