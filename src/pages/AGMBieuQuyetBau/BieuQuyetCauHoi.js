@@ -15,11 +15,15 @@ import TakeerIcon from '../../components/TakeerIcon';
 import styles from './styles';
 import TakeerButton from '../../components/TakeerButton';
 
+import OrientationLoadingOverlay from 'react-native-orientation-loading-overlay';
 import AsyncStorage from '@react-native-community/async-storage';
 import * as actions from '../../actions';
 import { connect } from 'react-redux';
 
-import { url_Checkin_HASHCODE, url_Checkin_MACD, url_Checkin_SODKSH, url_Answer_ThemLo, url_Answer_ThemLe } from '../../Global';
+import {
+    url_Checkin_HASHCODE, url_Checkin_MACD, url_Checkin_SODKSH, url_BauCu_SODKSH, url_BauCu_MACD,
+    url_Answer_ThemLo, url_Answer_ThemLe
+} from '../../Global';
 const { width, height } = Dimensions.get('window')
 
 class BieuQuyetCauHoi extends Component {
@@ -38,7 +42,10 @@ class BieuQuyetCauHoi extends Component {
 
             macodong: '',
             sodksh: '',
-            lstBQHangDoi: []
+            lstBQHangDoi: [],
+
+            HOTEN: '',
+            SOCP_SOHUU: ''
         }
     }
 
@@ -110,14 +117,15 @@ class BieuQuyetCauHoi extends Component {
     onSuccess = async (e) => {
         const check = e.data.substring(0, 4);
 
-        alert(e.data);
         console.log('scanned data' + e.data);
         this.setState({
             result: e.data,
             scan: false,
             ScanResult: true,
             // macodong: e.data,
-            dgQR: false
+            dgQR: false,
+            SOCP_SOHUU: '',
+            HOTEN: ''
         });
 
         await this.setState({
@@ -280,7 +288,9 @@ class BieuQuyetCauHoi extends Component {
                 this.setState({
                     isLoading: false,
                     macodong: '',
-                    sodksh: ''
+                    sodksh: '',
+                    SOCP_SOHUU: '',
+                    HOTEN: ''
                 });
             })
             .catch(e => {
@@ -294,20 +304,26 @@ class BieuQuyetCauHoi extends Component {
     btnTimKiem = async () => {
         await this.setState({
             isLoading: true,
+            SOCP_SOHUU: '',
+            HOTEN: ''
         });
 
         var data = {};
         var sURL = '';
         if (this.state.macodong != '') {
-            sURL = await url_Checkin_MACD();
+            sURL = await url_BauCu_MACD();
             data = {
-                MA_CODONG: this.state.macodong
+                MA_CODONG: this.state.macodong,
+                ID_CAUHOI: this.state.ID_CAUHOI,
+                SODKSH: ''
             }
         }
         else if (this.state.sodksh != '') {
-            sURL = await url_Checkin_SODKSH();
+            sURL = await url_BauCu_SODKSH();
             data = {
-                SODKSH: this.state.sodksh
+                SODKSH: this.state.sodksh,
+                MA_CODONG: 0,
+                ID_CAUHOI: this.state.ID_CAUHOI
             }
         }
         console.log('data tk', data)
@@ -511,7 +527,7 @@ class BieuQuyetCauHoi extends Component {
                                     ref='HOTEN'
                                 />
                                 <View style={{ marginVertical: 5 }}></View>
-                                <TakeerText style={styles.normalText}>Số cổ phần sở hữu</TakeerText>
+                                <TakeerText style={styles.normalText}>Số cổ phần sở hữu và được UQ(nếu có)</TakeerText>
                                 <TextInput
                                     editable={false}
                                     placeholder="..."
@@ -605,7 +621,7 @@ class BieuQuyetCauHoi extends Component {
                                         alignContent: 'center',
                                         alignItems: 'center'
 
-                                    }]} onPress={() => this.goCourse(v)}>
+                                    }]}>
 
                                         <View style={[Styles.latestContentHolder, { flex: 1 }]}>
 
@@ -661,7 +677,6 @@ class BieuQuyetCauHoi extends Component {
                         </View>
                     </KeyboardAvoidingView>
 
-
                     <Modal
                         style={{
                             flex: 1,
@@ -710,8 +725,6 @@ class BieuQuyetCauHoi extends Component {
 
                             <ScrollView style={{ flex: 1, paddingHorizontal: 5 }}>
                                 <View style={{ flexDirection: 'column', backgroundColor: Colors._default }}>
-                                    {/* <TakeerText style={Styles.normalText}>Bước 1: Chọn khoá học</TakeerText>
-                                <View style={{ marginVertical: 5 }}></View> */}
                                     {scan && <QRCodeScanner
                                         reactivate={true}
                                         showMarker={true}
@@ -763,6 +776,19 @@ class BieuQuyetCauHoi extends Component {
                         </SafeAreaView>
                     </Modal>
 
+                    <OrientationLoadingOverlay
+                        visible={this.state.isLoading}
+                        color="white"
+                        indicatorSize="large"
+                        messageFontSize={24}
+                        message="Đang tải dữ liệu ..."
+                    >
+                        <View>
+                            <Image style={{ height: 128, width: 128 }}
+                                source={Images.loading}
+                            />
+                        </View>
+                    </OrientationLoadingOverlay>
                 </SafeAreaView>
 
             </ImageBackground>

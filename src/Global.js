@@ -68,6 +68,18 @@ export const url_Checkin_HASHCODE = async () => {
     return url;
 }
 
+
+export const url_BauCu_SODKSH = async () => {
+    var ipserver = await AsyncStorage.getItem("ipserver");
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/baucu/getinfo/bydksh";
+    return url;
+}
+export const url_BauCu_MACD = async () => {
+    var ipserver = await AsyncStorage.getItem("ipserver");
+    var url = "http://" + ipserver + "/AGMService/api/v1/agm/baucu/getinfo/bymacd";
+    return url;
+}
+
 // Câu hỏi biểu quyết
 export const url_Question_List = async () => {
     var ipserver = await AsyncStorage.getItem("ipserver");

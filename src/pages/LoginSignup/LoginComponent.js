@@ -34,7 +34,7 @@ class LoginComponent extends Component {
       loggedIn: false,
       username: '',
       password: '',
-      ipserver: '10.10.171.190',
+      ipserver: '10.10.171.50',
       isLoading: false,
     };
   }
@@ -71,7 +71,7 @@ class LoginComponent extends Component {
         const body = new FormData();
         body.append('usernameOrEmailAddress', this.state.username);
         body.append('password', this.state.password);
-        var urlLogin = "http://" + this.state.ipserver + "/AGMWeb/Account/LoginAGM";
+        var urlLogin = "http://" + this.state.ipserver + "/DHCD/Account/LoginAGM"; // ThanhVT
 
         fetch(urlLogin, {
           method: 'POST',

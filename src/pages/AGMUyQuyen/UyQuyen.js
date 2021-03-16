@@ -4,9 +4,9 @@ import {
     Image,
     TouchableOpacity,
     ScrollView,
-    TextInput, KeyboardAvoidingView,
-    Keyboard, ImageBackground,
-    SafeAreaView
+    TextInput, KeyboardAvoidingView, Modal,
+    Keyboard, ImageBackground, Text,
+    SafeAreaView, Dimensions
 } from 'react-native';
 import * as actions from '../../actions';
 import { connect } from 'react-redux';
@@ -15,13 +15,17 @@ import { Styles, Fonts, Colors, Images } from '../../Common';
 import TakeerIcon from '../../components/TakeerIcon';
 import styles from './styles';
 import TakeerButton from '../../components/TakeerButton';
-import { url_CoDong_MACD, url_CoDong_SODKSH, url_UyQuyen_Them } from '../../Global';
+import { url_CoDong_MACD, url_CoDong_SODKSH, url_UyQuyen_Them, url_Checkin_HASHCODE } from '../../Global';
 import OrientationLoadingOverlay from 'react-native-orientation-loading-overlay';
 
+import QRCodeScanner from 'react-native-qrcode-scanner';
+
+const { width, height } = Dimensions.get('window')
 class UyQuyen extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            scan: false,
             margin_bottom: 10,
             macodong: '',
             sodksh: '',
@@ -30,6 +34,20 @@ class UyQuyen extends Component {
             SOCP_UQ: '',
             NGUOIDUOC_UQ: '',
             CMTDUOC_UQ: '',
+            VIEW_UQ: undefined,
+            dgQR: false
+        }
+    }
+    _isMounted = false;
+    componentDidMount() {
+        this._isMounted = true;
+        this.loadInitialState().done();
+    }
+
+    loadInitialState = async () => {
+        if (this.props.navigation.state.params != undefined) {
+            const uq = this.props.navigation.state.params.data;
+            console.log('view uq', uq);
         }
     }
 
@@ -56,9 +74,74 @@ class UyQuyen extends Component {
     //     }, 10)
     // }
 
+    btnQRCODE = async () => {
+        this.setState({ dgQR: true, scan: true })
+    };
+
+    onSuccess = async (e) => {
+        const check = e.data.substring(0, 4);
+
+        console.log('scanned data' + e.data);
+        this.setState({
+            result: e.data,
+            scan: false,
+            ScanResult: true,
+            dgQR: false
+        });
+
+        await this.setState({
+            isLoading: true,
+        });
+
+        var data = {};
+        var sURL = await url_Checkin_HASHCODE();
+        data = {
+            HASHCODE: e.data
+        };
+        await fetch(sURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "username": this.props.agm.userAGM.userName,
+                "token": this.props.agm.userAGM.signInToken
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => {
+                return res.json();
+            })
+            .then(response => {
+                if (response.State == true) {
+                    this.setState({
+                        sodksh: response.Data.SODKSH,
+                        macodong: response.Data.MA_CODONG + '',
+                        SOCP_SOHUU: response.Data.SOCP_SOHUU + '',
+                        SOCP_UQ: response.Data.SOCP_SOHUU + '',
+                        HOTEN: response.Data.HOTEN,
+                    });
+
+                } else {
+                    alert('Tìm kiếm không thành công')
+                }
+                this.setState({
+                    isLoading: false
+                });
+            })
+            .catch(e => {
+                console.log('exp tk hash', e)
+                this.setState({
+                    isLoading: false
+                });
+            });
+
+    }
+
     btnTimKiem = async () => {
         await this.setState({
             isLoading: true,
+            SOCP_SOHUU: '',
+            SOCP_UQ: '',
+            HOTEN: '',
         });
 
         var data = {};
@@ -88,7 +171,7 @@ class UyQuyen extends Component {
                 return res.json();
             })
             .then(response => {
-                console.log("url_CoDong_xxx", response.Data.SOCP_SOHUU);
+                console.log("url_CoDong_xxx", response.Data);
                 if (response.State == true) {
                     this.setState({
                         sodksh: response.Data.SODKSH,
@@ -97,7 +180,10 @@ class UyQuyen extends Component {
                         SOCP_UQ: response.Data.SOCP_SOHUU + '',
                         HOTEN: response.Data.HOTEN,
                     });
+                    alert('Tìm kiếm thành công')
 
+                } else if (response.Message != '') {
+                    alert(response.Message)
                 } else {
                     alert('Tìm kiếm không thành công')
                 }
@@ -114,6 +200,24 @@ class UyQuyen extends Component {
     }
 
     btnUyQuyen = async () => {
+
+
+        if (this.state.SOCP_UQ == '' || this.state.NGUOIDUOC_UQ == '' || this.state.CMTDUOC_UQ == '') {
+            alert('Cần điền đầy đủ thông tin');
+            return;
+        }
+
+        if (this.state.SOCP_SOHUU < this.state.SOCP_UQ || this.state.SOCP_UQ <= 0 || this.state.SOCP_UQ.toString().indexOf('.') !== -1) {
+            alert('Số CP uỷ quyền không hợp lệ');
+            return;
+        }
+
+        if (this.state.sodksh == this.state.CMTDUOC_UQ.trim()) {
+            alert('Người được uỷ quyền không hợp lệ')
+            return;
+        }
+
+        console.log('done');
         await this.setState({
             isLoading: true,
         });
@@ -123,7 +227,8 @@ class UyQuyen extends Component {
             CMT_NGUOIUQ: this.state.sodksh,
             SOCP_UQ: this.state.SOCP_UQ,
             NGUOIDUOC_UQ: this.state.NGUOIDUOC_UQ,
-            CMTDUOC_UQ: this.state.CMTDUOC_UQ
+            CMTDUOC_UQ: this.state.CMTDUOC_UQ,
+            MA_CODONG: this.state.macodong
 
         };
         await fetch(sURL, {
@@ -148,7 +253,12 @@ class UyQuyen extends Component {
                 this.setState({
                     isLoading: false,
                     macodong: '',
-                    sodksh: ''
+                    sodksh: '',
+                    HOTEN: '',
+                    SOCP_SOHUU: '',
+                    SOCP_UQ: '',
+                    NGUOIDUOC_UQ: '',
+                    CMTDUOC_UQ: '',
                 });
             })
             .catch(e => {
@@ -199,7 +309,29 @@ class UyQuyen extends Component {
 
                             <ScrollView>
                                 {/* Time Separator */}
-
+                                <TakeerButton
+                                    onPress={this.btnQRCODE}
+                                    backgroundColor={Colors.green}
+                                    padding={15}
+                                    borderWidth={1}
+                                    borderRadius={5}
+                                    borderColor="transparent"
+                                    textColor="#fff"
+                                    textBold={false}
+                                    textItalic={false}
+                                    textSize={16}
+                                    textFont=""
+                                    text="QUÉT QR CODE" //button texts
+                                    showIcon={true} // if false, pass null to every icon attribute below
+                                    iconType="MaterialCommunityIcons" //Ionicons,Entypo, EvilIcons, FontAwesome, MaterialCommunityIcons, MaterialIcons, Octicons, SimpleLineIcons, Zocial, null
+                                    iconName="qrcode-scan" //icon name according to iconType or pass null to hide
+                                    iconSize={30}
+                                    iconColor="#fff"
+                                    iconPosition="right" //left, right, null
+                                    loading={false} //true or false -- true to show spinner/loading
+                                    loadingText="" // default is Loading.., you may pass any texts or null not to show
+                                />
+                                <View style={{ marginVertical: 5 }}></View>
                                 <TextInput
                                     placeholder="Mã cổ đông"
                                     placeholderTextColor={Colors.textSecondary}
@@ -261,7 +393,7 @@ class UyQuyen extends Component {
                                         color: Colors.textSecondary
                                     }}>
                                         ------
-                    </TakeerText>
+                                    </TakeerText>
                                     <View style={Styles.itm}>
                                         <View style={Styles.itb} />
                                     </View>
@@ -344,7 +476,7 @@ class UyQuyen extends Component {
                                     returnKeyType='done'
                                 />
                             </ScrollView>
-                            <TakeerButton
+                            {this.state.HOTEN != '' && this.state.VIEW_UQ == undefined ? <TakeerButton
                                 onPress={this.btnUyQuyen}
                                 backgroundColor={Colors.green}
                                 padding={15}
@@ -365,10 +497,87 @@ class UyQuyen extends Component {
                                 iconPosition="right" //left, right, null
                                 loading={false} //true or false -- true to show spinner/loading
                                 loadingText="" // default is Loading.., you may pass any texts or null not to show
-                            />
+                            /> : <View></View>}
+
 
                         </View>
                     </KeyboardAvoidingView>
+
+                    <Modal
+                        style={{
+                            flex: 1,
+                            backgroundColor: Colors.primaryAccentLight,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                        animationType={'slide'}
+                        visible={this.state.dgQR}
+                        onRequestClose={() => this.setState({ dgQR: false })}
+                        onTouchOutside={() => this.setState({ dgQR: false })}>
+                        <SafeAreaView
+                            style={{
+                                flex: 1,
+                                // borderColor: "rgba(158, 150, 150, .5)",
+                                // borderRadius: 20,
+                                height: height,
+
+                            }}
+                        >
+                            <View style={Styles.appHeader}>
+                                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
+                                    <TouchableOpacity onPress={() => this.setState({ dgQR: false })}>
+                                        <View style={{ padding: 4 }}>
+                                            <TakeerIcon
+                                                iconType="MaterialIcons"
+                                                iconName="close"
+                                                iconSize={30}
+                                                iconColor={Colors.primaryLight}
+                                                iconPosition="" //left, right, null
+                                            />
+                                        </View>
+                                    </TouchableOpacity>
+                                    <TakeerText style={{
+                                        color: Colors.primaryLight,
+                                        fontSize: 25,
+                                        textAlign: 'center',
+                                        flex: 1,
+                                        marginRight: 1
+                                    }}>
+                                        Quét thông tin cổ đông
+                                </TakeerText>
+
+                                </View>
+                            </View>
+
+                            <ScrollView style={{ flex: 1, paddingHorizontal: 5 }}>
+                                <View style={{ flexDirection: 'column', backgroundColor: Colors._default }}>
+                                    {this.state.scan && <QRCodeScanner
+                                        reactivate={true}
+                                        showMarker={true}
+                                        ref={(node) => { this.scanner = node }}
+                                        onRead={this.onSuccess}
+
+                                        bottomContent={
+                                            <View>
+                                                <TouchableOpacity style={styles.buttonTouchable} onPress={() => this.scanner.reactivate()}>
+                                                    <Text style={styles.buttonTextStyle}>OK. Got it!</Text>
+                                                </TouchableOpacity>
+
+                                                <TouchableOpacity style={styles.buttonTouchable} onPress={() => this.setState({ scan: false })}>
+                                                    <Text style={styles.buttonTextStyle}>Stop Scan</Text>
+                                                </TouchableOpacity>
+                                            </View>
+
+                                        }
+                                    />
+                                    }
+                                </View>
+
+                            </ScrollView>
+
+                        </SafeAreaView>
+                    </Modal>
+
                     <OrientationLoadingOverlay
                         visible={this.state.isLoading}
                         color="white"

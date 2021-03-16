@@ -463,7 +463,7 @@ backgroundLogin: {
   },
 
   latestTitleUQ: {
-    fontSize: 16,
+    fontSize: 13,
     color: Colors.textPrimary,
     marginBottom: 5,
     // fontFamily: 'BaiJamjuree-SemiBold',

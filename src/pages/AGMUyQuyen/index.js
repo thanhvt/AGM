@@ -4,9 +4,10 @@ import {
     Text,
     ScrollView,
     Image,
-    TouchableOpacity,
+    TouchableOpacity, TextInput,
     SafeAreaView
 } from 'react-native';
+import { Picker } from 'native-base';
 import * as actions from '../../actions';
 import { connect } from 'react-redux';
 import { Colors, Styles, Images, Fonts } from '../../Common';
@@ -22,10 +23,12 @@ import OrientationLoadingOverlay from 'react-native-orientation-loading-overlay'
 // import { urlApiGetKhoaHoc, urlServerImage, urlApiGetThongTinUser } from './../../Global';
 // import { urlApiGetDanhMucKhoaHoc } from '../../Global'; 
 
+import Dialog from "react-native-dialog";
 import { NavigationEvents } from "react-navigation";
 import TakeerIcon from './../../components/TakeerIcon';
 import { Fab } from 'native-base';
 import { url_UyQuyen_List } from '../../Global';
+import styles from './styles';
 var BUTTONS = [
     { text: "Tiếng Anh", icon: "american-football", iconColor: "#2c8ef4", value: "en-US" },
     { text: "Tiếng Tây Ban Nha", icon: "american-football", iconColor: "#ddd2ac", value: "es-ES" },
@@ -44,40 +47,6 @@ var BUTTONS = [
 var DESTRUCTIVE_INDEX = 3;
 var CANCEL_INDEX = 4;
 
-var Featured = [
-    {
-        title: 'Business Management',
-        curPrice: 12.99,
-        oldPrice: 19.99,
-        cover: Images.business,
-        isFeatured: true,
-        category: 'Business'
-    },
-    {
-        title: 'Learn How To Play Guitar',
-        curPrice: 16.99,
-        oldPrice: 20.99,
-        cover: Images.guitar,
-        isFeatured: false,
-        category: 'Technology'
-    },
-    {
-        title: 'Medicine & Biology Basics',
-        curPrice: 10.98,
-        oldPrice: 10.98,
-        cover: Images.medicine,
-        isFeatured: true,
-        category: 'Design'
-    },
-    {
-        title: 'Technology for Enthusiast',
-        curPrice: 200.5,
-        oldPrice: 222.8,
-        cover: Images.guitar,
-        isFeatured: true,
-        category: 'Business'
-    }
-];
 
 class AGMUyQuyen extends Component {
 
@@ -85,8 +54,12 @@ class AGMUyQuyen extends Component {
         super(props);
         this.state = {
             isLoading: false,
-            lstUyQuyen: []
-
+            lstFULL: [],
+            lstUyQuyen: [],
+            pickType: -1,
+            dgThongTinUQ: false,
+            itemUQ: undefined,
+            txtTimKiem: ''
         };
     }
 
@@ -106,9 +79,23 @@ class AGMUyQuyen extends Component {
     loadInitialState = async () => {
         StatusBar.setHidden(true);
 
-        await this.setState({
-            isLoading: true,
+
+    }
+
+    goUQ = async (uq) => {
+        // this.props.navigation.navigate('UyQuyen', {data: uq});
+        this.setState({ itemUQ: uq, dgThongTinUQ: true })
+    }
+
+    pickLoc = async (type) => {
+        this.setState({
+            pickType: type
         });
+        console.log(type);
+
+        // await this.setState({
+        //     isLoading: true,
+        // });
 
         var sURL = await url_UyQuyen_List();
         await fetch(sURL, {
@@ -123,12 +110,23 @@ class AGMUyQuyen extends Component {
                 return res.json();
             })
             .then(response => {
-                console.log("url_UyQuyen_List", response.Data.length);
+                console.log("url_UyQuyen_List", response.Data);
                 if (response.State == true) {
-                    this.setState({ lstUyQuyen: response.Data });
+                    let mData = [];
+                    if (type == 0) {
+                        mData = response.Data.filter(c => c.USERID == this.props.agm.userAGM.id);
+                    }
+                    else if (type == 1) {
+                        mData = response.Data;
+                    }
+                    this.setState({ lstUyQuyen: mData, lstFULL: response.Data });
                 } else {
 
                 }
+                this.setState({
+                    isLoading: false
+                });
+            }).finally(() => {
                 this.setState({
                     isLoading: false
                 });
@@ -139,15 +137,16 @@ class AGMUyQuyen extends Component {
                     isLoading: false
                 });
             });
-
     }
 
-    goCourse = (course) => {
-        // this.props.trangThaiHoc(false);
-        // this.props.broadcastITEM_KHOAHOC(course);
-        // this.props.nav.navigate('Course');
+    txtTimKiemSubmit = (txtTim) => { 
+        var lstTK = this.state.lstFULL.filter(c => c.NGUOI_UQ.indexOf(txtTim.nativeEvent.text) !== -1
+        || c.CMTDUOC_UQ.indexOf(txtTim.nativeEvent.text) !== -1
+        || c.CMT_NGUOIUQ.indexOf(txtTim.nativeEvent.text) !== -1
+        || c.MA_CODONG.indexOf(txtTim.nativeEvent.text) !== -1
+        || c.NGUOIDUOC_UQ.indexOf(txtTim.nativeEvent.text) !== -1);
+        this.setState({ lstUyQuyen: lstTK });
     }
-
 
     render() {
 
@@ -167,14 +166,37 @@ class AGMUyQuyen extends Component {
                 <View style={{ flex: 1, backgroundColor: Colors.secondary }}>
                     <Header navigation={this.props.navigation} />
                     <ScrollView style={Styles.containerAfterHeader}>
-
                         <View>
+
+                            <View style={Styles.borderPicker}>
+                                <Picker
+                                    selectedValue={this.state.pickType}
+                                    onValueChange={this.pickLoc.bind(this)}
+                                >
+                                    <Picker.Item key={-1} label="Chọn" value={-1} />
+                                    <Picker.Item key={0} label="Lọc theo user đăng nhập" value={0} />
+                                    <Picker.Item key={1} label={"Tất cả"} value={1} />
+                                </Picker>
+                            </View>
+                            <View style={{ marginVertical: 5 }}></View>
+                            <TextInput
+                                placeholder="Tìm kiếm theo họ tên, mã cổ đông, số đksh"
+                                placeholderTextColor={Colors.textSecondary}
+                                textColor={Colors.textWhite}
+                                underlineColorAndroid="transparent"
+                                style={styles.input}
+                                value={this.state.txtTimKiem}
+                                onChangeText={(txtTimKiem) => this.setState({ txtTimKiem })}
+                                onSubmitEditing={(txtTimKiem) => this.txtTimKiemSubmit(txtTimKiem)}
+                                ref='txtTimKiem'
+                                returnKeyType='search'
+                            />
 
                             {this.state.lstUyQuyen.map((v, i) => (
                                 <TouchableOpacity key={`${i}-latest`} style={[Styles.latestHolder, {
                                     backgroundColor: 'rgba(255,255,255,0.03)',
                                     borderRadius: 4
-                                }]} onPress={() => this.goCourse(v)}>
+                                }]} onPress={() => this.goUQ(v)}>
                                     <View style={[Styles.latestImage, { justifyContent: 'center', alignItems: 'center' }]}>
                                         {/* <Image source={v.cover} style={Styles.latestCover}
                                             resizeMethod="scale"
@@ -237,6 +259,45 @@ class AGMUyQuyen extends Component {
                     />
 
                 </Fab>
+
+                <Dialog.Container visible={this.state.dgThongTinUQ}>
+                    <Dialog.Title>Thông tin uỷ quyền</Dialog.Title>
+                    {
+                        this.state.itemUQ != undefined ?
+                            <View>
+                                <Dialog.Description>
+                                    Người uỷ quyền: {this.state.itemUQ.NGUOI_UQ}
+                                </Dialog.Description>
+                                <Dialog.Description>
+                                    CMT người uỷ quyền: {this.state.itemUQ.CMT_NGUOIUQ}
+                                </Dialog.Description>
+                                <Dialog.Description>
+                                    Mã cổ đông: {this.state.itemUQ.MA_CODONG}
+                                </Dialog.Description>
+                                <Dialog.Description>
+                                    Người được uỷ quyền: {this.state.itemUQ.NGUOI_DUOCUQ}
+                                </Dialog.Description>
+                                <Dialog.Description>
+                                    CMT được uỷ quyền: {this.state.itemUQ.CMTDUOC_UQ}
+                                </Dialog.Description>
+                                <Dialog.Description>
+                                    Số CP UQ: {this.state.itemUQ.SOCP_UQ}
+                                </Dialog.Description>
+
+                            </View>
+                            :
+                            <View>
+                            </View>
+                    }
+
+
+                    <Dialog.Button label="Quay lại" onPress={() =>
+                        this.setState({
+                            dgThongTinUQ: false,
+                        })}
+
+                    />
+                </Dialog.Container>
 
 
                 <NavigationEvents

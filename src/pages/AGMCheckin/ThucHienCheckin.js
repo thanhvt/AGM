@@ -16,6 +16,7 @@ import styles from './styles';
 import TakeerButton from '../../components/TakeerButton';
 import { url_Checkin_HASHCODE, url_Checkin_MACD, url_Checkin_SODKSH, url_Checkin_Them_BySoDKSH, url_Checkin_Them_ByMaCD } from '../../Global';
 
+import OrientationLoadingOverlay from 'react-native-orientation-loading-overlay';
 import * as actions from '../../actions';
 import { connect } from 'react-redux';
 import {
@@ -38,9 +39,10 @@ class ThucHienCheckin extends Component {
             scan: false,
             ScanResult: false,
             result: null,
-
             macodong: '',
-            sodksh: ''
+            sodksh: '',
+            HOTEN: '',
+            disInGop: false
         }
     }
 
@@ -106,7 +108,7 @@ class ThucHienCheckin extends Component {
                 return res.json();
             })
             .then(response => {
-                console.log("url_Checkin_HASHCODE", response.Data);
+                console.log("url_Checkin_HASHCODE", response, this.props.agm.userAGM, sURL);
                 if (response.State == true) {
                     this.setState({
                         sodksh: response.Data.SODKSH,
@@ -115,7 +117,7 @@ class ThucHienCheckin extends Component {
                         SOCP_UQ: response.Data.SOCP_SOHUU + '',
                         HOTEN: response.Data.HOTEN,
                     });
-
+                    alert('Tìm kiếm thành công');
                 } else {
                     alert('Tìm kiếm không thành công')
                 }
@@ -141,6 +143,9 @@ class ThucHienCheckin extends Component {
     btnTimKiem = async () => {
         await this.setState({
             isLoading: true,
+            SOCP_SOHUU: '',
+            SOCP_UQ: '',
+            HOTEN: '',
         });
 
         var data = {};
@@ -179,10 +184,11 @@ class ThucHienCheckin extends Component {
                         SOCP_SOHUU: response.Data.SOCP_SOHUU + '',
                         SOCP_UQ: response.Data.SOCP_DUOCUQ + '',
                         HOTEN: response.Data.HOTEN,
+                        disInGop: response.Data.NOI_BO == 0 && response.Data.HCM == 0
                     });
-
+                    alert('Tìm kiếm thành công');
                 } else {
-                    alert('Tìm kiếm không thành công')
+                    alert('Tìm kiếm không thành công');
                 }
                 this.setState({
                     isLoading: false
@@ -197,6 +203,13 @@ class ThucHienCheckin extends Component {
     }
 
     btnCheckIn = async () => {
+
+        if (this.state.HOTEN == '' || this.state.SOCP_SOHUU == '' || this.state.SOCP_DUOCUQ == '') {
+            alert('Thông tin không hợp lệ');
+            return;
+        }
+        
+
         console.log('this.state.inGop', this.state.inGop)
         await this.setState({
             isLoading: true,
@@ -429,13 +442,13 @@ class ThucHienCheckin extends Component {
                                 returnKeyType='next'
                             />
                             <View style={{ flexDirection: 'row', marginTop: 20, marginLeft: -5 }}>
-                                <CheckBox style={{ marginRight: 30 }} checked={this.state.inGop}
+                                <CheckBox style={{ marginRight: 30 }} checked={this.state.inGop} disabled={this.state.disInGop}
                                     onPress={() => this.toggleSwitch1()} color="yellow" />
                                 <TakeerText style={styles.normalText}>In gộp</TakeerText>
                             </View>
 
                         </ScrollView>
-                        <TakeerButton
+                        {this.state.HOTEN != '' ? <TakeerButton
                             onPress={this.btnCheckIn}
                             backgroundColor={Colors.green}
                             padding={15}
@@ -456,11 +469,12 @@ class ThucHienCheckin extends Component {
                             iconPosition="right" //left, right, null
                             loading={false} //true or false -- true to show spinner/loading
                             loadingText="" // default is Loading.., you may pass any texts or null not to show
-                        />
+                        /> : <View></View>
+                        }
+                        
 
                     </View>
                 </KeyboardAvoidingView>
-
 
                 <Modal
                     style={{
@@ -563,6 +577,19 @@ class ThucHienCheckin extends Component {
                     </SafeAreaView>
                 </Modal>
 
+                <OrientationLoadingOverlay
+                    visible={this.state.isLoading}
+                    color="white"
+                    indicatorSize="large"
+                    messageFontSize={24}
+                    message="Đang tải dữ liệu ..."
+                >
+                    <View>
+                        <Image style={{ height: 128, width: 128 }}
+                            source={Images.loading}
+                        />
+                    </View>
+                </OrientationLoadingOverlay>
             </SafeAreaView>
         );
     }

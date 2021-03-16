@@ -122,7 +122,7 @@ class TabHome extends Component {
                 <View style={{ flex: 1, backgroundColor: Colors.primaryLight }}>
                     <Header navigation={this.props.navigation} />
 
-                    <Text style={{ padding: 8, color: '#FFF' }}>
+                    <Text style={{ padding: 8, color: '#FFF', textAlign: 'center' }}>
                         Ngân hàng TMCP ngoại thương Việt Nam Vietcombank
                     </Text>
 
@@ -165,7 +165,11 @@ class TabHome extends Component {
                             </ScrollView>
                         </View> */}
 
-                        <View>
+                        {/* <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                            <Text style={Styles.headerTitle}>Welcome</Text>
+                        </View> */}
+
+                        {/* <View>
                             <Text style={Styles.headerTitle}>Báo cáo</Text>
                         </View>
                         <View style={Styles.gridWrapContainer}>
@@ -181,7 +185,7 @@ class TabHome extends Component {
                                     </View>
                                 </TouchableOpacity>
                             ))}
-                        </View>
+                        </View> */}
 
                         {/* <View>
                             <TakeerText style={Styles.headerTitle}>Latest</TakeerText>

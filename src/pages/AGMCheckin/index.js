@@ -4,7 +4,7 @@ import {
     Text,
     ScrollView,
     Image, Alert,
-    TouchableOpacity, ImageBackground,
+    TouchableOpacity, ImageBackground, TextInput,
     SafeAreaView
 } from 'react-native';
 import * as actions from '../../actions';
@@ -25,8 +25,9 @@ import OrientationLoadingOverlay from 'react-native-orientation-loading-overlay'
 import Dialog from "react-native-dialog";
 import { NavigationEvents } from "react-navigation";
 import TakeerIcon from './../../components/TakeerIcon';
-import { Fab } from 'native-base';
+import { Fab, Picker } from 'native-base';
 import { url_UyQuyen_List, url_Checkin_List, url_Checkin_InLai } from '../../Global';
+import styles from './styles';
 var BUTTONS = [
     { text: "Tiếng Anh", icon: "american-football", iconColor: "#2c8ef4", value: "en-US" },
     { text: "Tiếng Tây Ban Nha", icon: "american-football", iconColor: "#ddd2ac", value: "es-ES" },
@@ -34,50 +35,6 @@ var BUTTONS = [
     { text: "Tiếng Hàn", icon: "aperture", iconColor: "#ea943b", value: "ko-KO" },
     { text: "Tiếng Trung", icon: "american-football", iconColor: "#3aabcc", value: "vi-VN" },
     // { text: "Tiếng Hàn", icon: "aperture", iconColor: "#22cab1", value: "zh-ZH" },
-];
-// Id   Name
-// en-US    Tiếng Anh
-// es-ES    Tiếng Tây Ban Nha
-// ja-JP    Tiếng Nhật
-// ko-KO    Tiếng Hàn
-// vi-VN    Tiếng Trung
-// zh-ZH    Tiếng Trung
-var DESTRUCTIVE_INDEX = 3;
-var CANCEL_INDEX = 4;
-
-var Featured = [
-    {
-        title: 'Đỗ Quốc Anh - 92829293',
-        curPrice: 12.99,
-        oldPrice: 19.99,
-        cover: Images.business,
-        isFeatured: true,
-        category: 'Business'
-    },
-    {
-        title: 'Nguyễn Anh Tuấn - 092829921',
-        curPrice: 16.99,
-        oldPrice: 20.99,
-        cover: Images.guitar,
-        isFeatured: false,
-        category: 'Technology'
-    },
-    {
-        title: 'Trịnh Văn Thanh - 02928383',
-        curPrice: 10.98,
-        oldPrice: 10.98,
-        cover: Images.medicine,
-        isFeatured: true,
-        category: 'Design'
-    },
-    {
-        title: 'Technology for Enthusiast',
-        curPrice: 200.5,
-        oldPrice: 222.8,
-        cover: Images.guitar,
-        isFeatured: true,
-        category: 'Business'
-    }
 ];
 
 class Checkin extends Component {
@@ -89,7 +46,12 @@ class Checkin extends Component {
             lstCheckin: [],
             dgLyDoInLai: false,
             txtLyDoInLai: '',
-            MA_CODONG: ''
+            MA_CODONG: '',
+            pickType: -1,
+            dgThongTinCheckin: false,
+            itemCheckin: undefined,
+            lstFULL: [],
+            txtTimKiem: ''
         };
     }
 
@@ -109,57 +71,24 @@ class Checkin extends Component {
     loadInitialState = async () => {
         StatusBar.setHidden(true);
 
-        await this.setState({
-            isLoading: true,
-        });
 
-        var sURL = await url_Checkin_List();
-        await fetch(sURL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "username": this.props.agm.userAGM.userName,
-                "token": this.props.agm.userAGM.signInToken
-            }
-        })
-            .then(res => {
-                return res.json();
-            })
-            .then(response => {
-                console.log("url_Checkin_List", response.Data);
-                if (response.State == true) {
-                    this.setState({ lstCheckin: response.Data });
-                } else {
-
-                }
-                this.setState({
-                    isLoading: false
-                });
-            })
-            .catch(e => {
-                console.log('exp', e)
-                this.setState({
-                    isLoading: false
-                });
-            });
     }
 
-    goCourse = (course) => {
-        // this.props.trangThaiHoc(false);
-        // this.props.broadcastITEM_KHOAHOC(course);
-        // this.props.nav.navigate('Course');
+    goCheckIn = async (uq) => {
+        this.setState({ itemCheckin: uq, dgThongTinCheckin: true })
     }
+
 
     handleCancel = () => {
         this.setState({
-            dgLyDoInLai: false,  
+            dgLyDoInLai: false,
         });
     };
 
     handleOK = async () => {
         await this.setState({
             isLoading: true,
-            dgLyDoInLai: false 
+            dgLyDoInLai: false
         });
         var sURL = await url_Checkin_InLai();
         var data = {
@@ -198,11 +127,64 @@ class Checkin extends Component {
             });
     }
 
-    btnInLai = (MA_CODONG) => { 
+    btnInLai = (MA_CODONG) => {
         this.setState({
-            dgLyDoInLai: true,  
+            dgLyDoInLai: true,
             MA_CODONG: MA_CODONG
         });
+    }
+
+    pickLoc = async (type) => {
+        console.log(type);
+        this.setState({
+            pickType: type,
+            // isLoading: true,
+        });
+
+        var sURL = await url_Checkin_List();
+        await fetch(sURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "username": this.props.agm.userAGM.userName,
+                "token": this.props.agm.userAGM.signInToken
+            }
+        })
+            .then(res => {
+                return res.json();
+            })
+            .then(response => {
+                console.log("url_Checkin_List", response.Data);
+                if (response.State == true) {
+
+                    let mData = [];
+                    if (type == 0) {
+                        mData = response.Data.filter(c => c.USERID == this.props.agm.userAGM.id);
+                    }
+                    else {
+                        mData = response.Data;
+                    }
+                    this.setState({ lstCheckin: mData, lstFULL: response.Data });
+
+                } else {
+
+                }
+                this.setState({
+                    isLoading: false
+                });
+            })
+            .catch(e => {
+                console.log('exp', e)
+                this.setState({
+                    isLoading: false
+                });
+            });
+    }
+
+    txtTimKiemSubmit = (txtTim) => {
+        var lstTK = this.state.lstFULL.filter(c => c.CMT.indexOf(txtTim.nativeEvent.text) !== -1
+                        || c.MA_CODONG.indexOf(txtTim.nativeEvent.text) !== -1);
+        this.setState({ lstCheckin: lstTK });
     }
 
     render() {
@@ -230,6 +212,30 @@ class Checkin extends Component {
 
                             <View>
 
+                                <View style={Styles.borderPicker}>
+                                    <Picker
+                                        selectedValue={this.state.pickType}
+                                        onValueChange={this.pickLoc.bind(this)}
+                                    >
+                                        <Picker.Item key={-1} label="Chọn" value={-1} />
+                                        <Picker.Item key={0} label="Lọc theo user đăng nhập" value={0} />
+                                        <Picker.Item key={1} label={"Tất cả"} value={1} />
+                                    </Picker>
+                                </View>
+
+                                <View style={{ marginVertical: 5 }}></View>
+                                <TextInput
+                                    placeholder="Tìm kiếm theo cmt"
+                                    placeholderTextColor={Colors.textSecondary}
+                                    textColor={Colors.textWhite}
+                                    underlineColorAndroid="transparent"
+                                    style={styles.input}
+                                    value={this.state.txtTimKiem}
+                                    onChangeText={(txtTimKiem) => this.setState({ txtTimKiem })}
+                                    onSubmitEditing={(txtTimKiem) => this.txtTimKiemSubmit(txtTimKiem)}
+                                    ref='txtTimKiem'
+                                    returnKeyType='search'
+                                />
                                 {this.state.lstCheckin.map((v, i) => (
                                     <TouchableOpacity key={`${i}-latest`} style={[Styles.latestHolder, {
                                         // backgroundColor: Colors.opacity,
@@ -237,15 +243,15 @@ class Checkin extends Component {
                                         alignContent: 'center',
                                         alignItems: 'center'
 
-                                    }]} onPress={() => this.goCourse(v)}>
+                                    }]} onPress={() => this.goCheckIn(v)}>
                                         {/* <TakeerText style={Styles.latestTitle}>{i + 1}.</TakeerText> */}
 
                                         <View style={[Styles.latestContentHolder, { flex: 1 }]}>
 
-                                            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 8 }}>
 
+                                                <TakeerText style={Styles.latestTitle}>{v.MA_CODONG}</TakeerText>
                                                 <TakeerText style={Styles.latestTitle}>{v.CMT}</TakeerText>
-                                                {/* <TakeerText style={Styles.latestTitle}>In {v.SOLAN_IN} lần </TakeerText>  */}
                                             </View>
                                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 8 }}>
                                                 <View>
@@ -260,7 +266,7 @@ class Checkin extends Component {
                                                     <TakeerText style={Styles.latestListH}>{v.SOLAN_IN}</TakeerText>
                                                     <TakeerText style={Styles.latestListB}>SL In</TakeerText>
                                                 </View>
-                                                <TouchableOpacity onPress={() => this.btnInLai(v.MA_CODONG)} style={{alignItems: 'center'}}>
+                                                <TouchableOpacity onPress={() => this.btnInLai(v.MA_CODONG)} style={{ alignItems: 'center' }}>
                                                     <TakeerIcon
                                                         iconType="MaterialCommunityIcons"
                                                         iconName="printer-wireless"
@@ -340,6 +346,42 @@ class Checkin extends Component {
                         onChangeText={(txtLyDoInLai) => this.setState({ txtLyDoInLai })}></Dialog.Input>
                     <Dialog.Button label="Hủy" onPress={this.handleCancel} />
                     <Dialog.Button label="Đồng ý" onPress={() => this.handleOK()} />
+                </Dialog.Container>
+
+                <Dialog.Container visible={this.state.dgThongTinCheckin}>
+                    <Dialog.Title>Thông tin checkin</Dialog.Title>
+                    {
+                        this.state.itemCheckin != undefined ?
+                            <View>
+                                <Dialog.Description>
+                                    Người checkin: {this.state.itemCheckin.CMT}
+                                </Dialog.Description>
+                                <Dialog.Description>
+                                    Mã cổ đông: {this.state.itemCheckin.MA_CODONG}
+                                </Dialog.Description>
+                                <Dialog.Description>
+                                    Số CP sở hữu: {this.state.itemCheckin.SOCP_SOHUU}
+                                </Dialog.Description>
+                                <Dialog.Description>
+                                    Số CP được uỷ quyền: {this.state.itemCheckin.SOCP_DUOCUQ}
+                                </Dialog.Description>
+                                <Dialog.Description>
+                                    Số lần in: {this.state.itemCheckin.SOLAN_IN}
+                                </Dialog.Description>
+
+                            </View>
+                            :
+                            <View>
+                            </View>
+                    }
+
+
+                    <Dialog.Button label="Quay lại" onPress={() =>
+                        this.setState({
+                            dgThongTinCheckin: false,
+                        })}
+
+                    />
                 </Dialog.Container>
 
                 <NavigationEvents
