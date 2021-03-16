@@ -115,28 +115,42 @@ class BieuQuyetCauHoi extends Component {
     };
 
     onSuccess = async (e) => {
-        const check = e.data.substring(0, 4);
 
         console.log('scanned data' + e.data);
         this.setState({
             result: e.data,
             scan: false,
             ScanResult: true,
-            // macodong: e.data,
             dgQR: false,
             SOCP_SOHUU: '',
             HOTEN: ''
         });
 
+        var result = e.data.replace(/-/g, '');
+        var splitData = result.split('|');
+        console.log(splitData);
+        this.setState({
+            sodksh: splitData[2],
+            macodong: splitData[3],
+            SOCP_SOHUU: splitData[1],
+            SOCP_UQ: splitData[0],
+            HOTEN: '',
+        });
+
         await this.setState({
-            isLoading: true,
+            // isLoading: true,
         });
 
         var data = {};
-        var sURL = await url_Checkin_HASHCODE();
-        data = {
-            HASHCODE: e.data
-        };
+        var sURL = '';
+        if (this.state.macodong != '') {
+            sURL = await url_BauCu_MACD();
+            data = {
+                MA_CODONG: this.state.macodong,
+                ID_CAUHOI: this.state.ID_CAUHOI,
+                SODKSH: ''
+            }
+        } 
         await fetch(sURL, {
             method: "POST",
             headers: {
@@ -150,41 +164,50 @@ class BieuQuyetCauHoi extends Component {
                 return res.json();
             })
             .then(response => {
+                console.log("url_CoDong_xxx", response.Data);
                 if (response.State == true) {
                     this.setState({
-                        sodksh: response.Data.SODKSH,
-                        macodong: response.Data.MA_CODONG + '',
-                        SOCP_SOHUU: response.Data.SOCP_SOHUU + '',
-                        SOCP_UQ: response.Data.SOCP_SOHUU + '',
                         HOTEN: response.Data.HOTEN,
                     });
-
-                } else {
-                    alert('Tìm kiếm không thành công')
-                }
+                }  
                 this.setState({
                     isLoading: false
                 });
             })
             .catch(e => {
-                console.log('exp tk hash', e)
+                console.log('exp tkiem', e)
                 this.setState({
                     isLoading: false
                 });
-            });
-
+            }); 
     }
 
     btnHangDoi = async () => {
-        await this.setState({
-            isLoading: true,
-        });
+
+        if (this.state.sodksh == '' || this.state.HOTEN == '' || this.state.SOCP_SOHUU == '') {
+            alert("Thông tin không hợp lệ")
+            return;
+        }
+
 
         var LIST_BIEUQUYETCAUHOI = await AsyncStorage.getItem("LIST_BIEUQUYETCAUHOI");
         var lstBQHangDoi = [];
         if (LIST_BIEUQUYETCAUHOI != undefined && LIST_BIEUQUYETCAUHOI != null) {
-            lstBQHangDoi = JSON.parse(LIST_BIEUQUYETCAUHOI)
-        };
+            lstBQHangDoi = JSON.parse(LIST_BIEUQUYETCAUHOI);
+            console.log(lstBQHangDoi)
+            lstBQHangDoi = lstBQHangDoi.filter(c => c.KETQUA == this.state.KETQUA && c.ID_CAUHOI == this.state.ID_CAUHOI);
+
+            var lstCheckTrung = lstBQHangDoi.filter(c => c.MA_CODONG == this.state.macodong && c.SODKSH == this.state.sodksh);
+            console.log(lstCheckTrung.length);
+            if (lstCheckTrung.length > 0) {
+                alert('Nội dung biểu quyết này đã tồn tại trong hàng đợi');
+                return;
+            }
+        }
+
+        await this.setState({
+            isLoading: true,
+        });
 
         var item = {
             "MA_CODONG": this.state.macodong,
@@ -201,7 +224,10 @@ class BieuQuyetCauHoi extends Component {
         await this.setState({
             lstBQHangDoi: lstBQHangDoi,
             macodong: '',
-            sodksh: ''
+            sodksh: '',
+            isLoading: false,
+            SOCP_SOHUU: '',
+            HOTEN: ''
         });
         alert('Thành công')
     }
@@ -233,6 +259,7 @@ class BieuQuyetCauHoi extends Component {
                 console.log("url_Answer_ThemLo", response);
                 if (response.State == true) {
                     alert('Thành công');
+                    
                     // ThanhVT xoá trong hàng đợi
                 } else {
                     alert(response.Message);
@@ -252,6 +279,11 @@ class BieuQuyetCauHoi extends Component {
     }
 
     btnGuiNgay = async () => {
+        if (this.state.sodksh == '' || this.state.HOTEN == '' || this.state.SOCP_SOHUU == '') {
+            alert("Thông tin không hợp lệ")
+            return;
+        }
+
         await this.setState({
             isLoading: true,
         });
@@ -363,6 +395,36 @@ class BieuQuyetCauHoi extends Component {
                     isLoading: false
                 });
             });
+    }
+
+    btnXoaHangDoi = async (v) => {
+        console.log(v);
+        // var array = [...this.state.lstBQHangDoi]; // make a separate copy of the array
+        // var index = array.indexOf(v)
+        // if (index !== -1) {
+        //     array.splice(index, 1);
+        //     this.setState({ lstBQHangDoi: array });
+        // }
+
+        var LIST_BIEUQUYETCAUHOI = await AsyncStorage.getItem("LIST_BIEUQUYETCAUHOI");
+        console.log('1', LIST_BIEUQUYETCAUHOI);
+        var lstBQHangDoi = [];
+        if (LIST_BIEUQUYETCAUHOI != undefined && LIST_BIEUQUYETCAUHOI != null) {
+            lstBQHangDoi = JSON.parse(LIST_BIEUQUYETCAUHOI);
+            console.log('2', lstBQHangDoi);
+            var index = -1;
+            lstBQHangDoi.forEach((element, i) => {
+                if (element.MA_CODONG == v.MA_CODONG && element.SODKSH == v.SODKSH && element.ID_CAUHOI == v.ID_CAUHOI) index = i;
+            });
+
+            console.log('3', index);
+            if (index !== -1) {
+                lstBQHangDoi.splice(index, 1);
+                this.setState({ lstBQHangDoi: lstBQHangDoi });
+                await AsyncStorage.setItem('LIST_BIEUQUYETCAUHOI', JSON.stringify(lstBQHangDoi));
+            }
+             
+        }
     }
 
     render() {
@@ -624,11 +686,22 @@ class BieuQuyetCauHoi extends Component {
                                     }]}>
 
                                         <View style={[Styles.latestContentHolder, { flex: 1 }]}>
-
-                                            <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
-                                                <TakeerText style={Styles.latestTitle}>{i + 1}. </TakeerText>
-                                                <TakeerText style={Styles.latestTitle}>{v.SODKSH} - {v.HOTEN}</TakeerText>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
+                                                    <TakeerText style={Styles.latestTitle}>{i + 1}. </TakeerText>
+                                                    <TakeerText style={Styles.latestTitle}>{v.SODKSH} - {v.HOTEN}</TakeerText>
+                                                </View>
+                                                <TouchableOpacity onPress={() => this.btnXoaHangDoi(v)}>
+                                                        <TakeerIcon
+                                                            iconType="FontAwesome"
+                                                            iconName="remove"
+                                                            iconSize={30}
+                                                            iconColor={Colors.textWhite}
+                                                            iconPosition="" //left, right, null
+                                                        />
+                                                </TouchableOpacity>
                                             </View>
+
 
                                             <View style={{ flexDirection: 'row', marginVertical: 3 }}>
                                                 <View style={Styles.itm}>

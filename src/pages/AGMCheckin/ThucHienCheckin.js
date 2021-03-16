@@ -116,6 +116,7 @@ class ThucHienCheckin extends Component {
                         SOCP_SOHUU: response.Data.SOCP_SOHUU + '',
                         SOCP_UQ: response.Data.SOCP_SOHUU + '',
                         HOTEN: response.Data.HOTEN,
+                        disInGop: response.Data.NOI_BO == 0 && response.Data.HCM == 0
                     });
                     alert('Tìm kiếm thành công');
                 } else {
@@ -220,12 +221,14 @@ class ThucHienCheckin extends Component {
             sURL = await url_Checkin_Them_ByMaCD();
             data = {
                 MA_CODONG: this.state.macodong,
-                IN_GOP: this.state.inGop == false ? 0 : 1
+                IN_GOP: this.state.inGop == false ? 0 : 1,
+                CMT: this.state.sodksh,
             };
         }
         else {
             sURL = await url_Checkin_Them_BySoDKSH();
             data = {
+                MA_CODONG: this.state.macodong = '' ? 0 : this.state.macodong,
                 CMT: this.state.sodksh,
                 IN_GOP: this.state.inGop == false ? 0 : 1
             };

@@ -89,13 +89,17 @@ class AGMUyQuyen extends Component {
 
     pickLoc = async (type) => {
         this.setState({
-            pickType: type
+            pickType: type,
+            // isLoading: true
         });
-        console.log(type);
-
-        // await this.setState({
-        //     isLoading: true,
-        // });
+        console.log(type); 
+        if (type == -1) {
+            this.setState({
+                lstUyQuyen: [],
+                isLoading: false
+            });
+            return;
+        }
 
         var sURL = await url_UyQuyen_List();
         await fetch(sURL, {
@@ -110,22 +114,23 @@ class AGMUyQuyen extends Component {
                 return res.json();
             })
             .then(response => {
-                console.log("url_UyQuyen_List", response.Data);
+               
                 if (response.State == true) {
                     let mData = [];
                     if (type == 0) {
                         mData = response.Data.filter(c => c.USERID == this.props.agm.userAGM.id);
+                        // mData = response.Data;
                     }
                     else if (type == 1) {
                         mData = response.Data;
                     }
+                    console.log("url_UyQuyen_List", mData.length);
                     this.setState({ lstUyQuyen: mData, lstFULL: response.Data });
-                } else {
-
-                }
+                } 
                 this.setState({
                     isLoading: false
                 });
+                console.log('isLoading', this.state.isLoading)
             }).finally(() => {
                 this.setState({
                     isLoading: false
@@ -174,7 +179,7 @@ class AGMUyQuyen extends Component {
                                     onValueChange={this.pickLoc.bind(this)}
                                 >
                                     <Picker.Item key={-1} label="Chọn" value={-1} />
-                                    <Picker.Item key={0} label="Lọc theo user đăng nhập" value={0} />
+                                    <Picker.Item key={0} label={"Lọc theo user đăng nhập"} value={0} />
                                     <Picker.Item key={1} label={"Tất cả"} value={1} />
                                 </Picker>
                             </View>

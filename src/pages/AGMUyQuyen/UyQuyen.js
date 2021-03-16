@@ -75,7 +75,13 @@ class UyQuyen extends Component {
     // }
 
     btnQRCODE = async () => {
-        this.setState({ dgQR: true, scan: true })
+        this.setState({ dgQR: true, 
+            scan: true,
+            sodksh: '',
+            macodong: '',
+            SOCP_SOHUU: '',
+            SOCP_UQ: '',
+            HOTEN: '' })
     };
 
     onSuccess = async (e) => {
@@ -119,7 +125,7 @@ class UyQuyen extends Component {
                         SOCP_UQ: response.Data.SOCP_SOHUU + '',
                         HOTEN: response.Data.HOTEN,
                     });
-
+                    alert('Tìm kiếm thành công')
                 } else {
                     alert('Tìm kiếm không thành công')
                 }

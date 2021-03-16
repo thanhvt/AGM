@@ -127,10 +127,11 @@ class Checkin extends Component {
             });
     }
 
-    btnInLai = (MA_CODONG) => {
+    btnInLai = (MA_CODONG, CMT) => {
         this.setState({
             dgLyDoInLai: true,
-            MA_CODONG: MA_CODONG
+            MA_CODONG: MA_CODONG,
+            CMT: SODKSH
         });
     }
 
@@ -266,7 +267,7 @@ class Checkin extends Component {
                                                     <TakeerText style={Styles.latestListH}>{v.SOLAN_IN}</TakeerText>
                                                     <TakeerText style={Styles.latestListB}>SL In</TakeerText>
                                                 </View>
-                                                <TouchableOpacity onPress={() => this.btnInLai(v.MA_CODONG)} style={{ alignItems: 'center' }}>
+                                                <TouchableOpacity onPress={() => this.btnInLai(v.MA_CODONG, v.CMT)} style={{ alignItems: 'center' }}>
                                                     <TakeerIcon
                                                         iconType="MaterialCommunityIcons"
                                                         iconName="printer-wireless"

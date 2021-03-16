@@ -15,11 +15,12 @@ import TakeerIcon from '../../components/TakeerIcon';
 import styles from './styles';
 import TakeerButton from '../../components/TakeerButton';
 
+import OrientationLoadingOverlay from 'react-native-orientation-loading-overlay';
 import AsyncStorage from '@react-native-community/async-storage';
 import * as actions from '../../actions';
 import { connect } from 'react-redux';
 
-import { url_Checkin_HASHCODE, url_Checkin_MACD, url_Checkin_SODKSH, url_NhanSu_ThemLo, url_Answer_ThemLe } from '../../Global';
+import { url_Checkin_HASHCODE, url_BauCu_MACD, url_BauCu_SODKSH, url_NhanSu_ThemLo, url_Answer_ThemLe } from '../../Global';
 const { width, height } = Dimensions.get('window')
 
 class BauCuNhanSu extends Component {
@@ -39,7 +40,9 @@ class BauCuNhanSu extends Component {
             macodong: '',
             sodksh: '',
             lstNhanSu: [],
-            lstSoCPBau: []
+            lstSoCPBau: [],
+            HOTEN: '',
+            SOCP_SOHUU: ''
         }
     }
 
@@ -96,31 +99,48 @@ class BauCuNhanSu extends Component {
     }
 
     btnQRCODE = async () => {
-        this.setState({ dgQR: true, scan: true })
+        this.setState({
+            dgQR: true, scan: true, HOTEN: '',
+            SOCP_SOHUU: ''
+        })
     };
 
     onSuccess = async (e) => {
-        const check = e.data.substring(0, 4);
 
-        alert(e.data);
         console.log('scanned data' + e.data);
         this.setState({
             result: e.data,
             scan: false,
             ScanResult: true,
-            // macodong: e.data,
-            dgQR: false
+            dgQR: false,
+            SOCP_SOHUU: '',
+            HOTEN: ''
+        });
+
+        var result = e.data.replace(/-/g, '');
+        var splitData = result.split('|');
+        console.log(splitData);
+        this.setState({
+            sodksh: splitData[2],
+            macodong: splitData[3],
+            SOCP_SOHUU: splitData[1],
+            SOCP_UQ: splitData[0],
+            HOTEN: '',
         });
 
         await this.setState({
-            isLoading: true,
+            // isLoading: true,
         });
-
         var data = {};
-        var sURL = await url_Checkin_HASHCODE();
-        data = {
-            HASHCODE: e.data
-        };
+        var sURL = '';
+        if (this.state.macodong != '') {
+            sURL = await url_BauCu_MACD();
+            data = {
+                MA_CODONG: this.state.macodong,
+                ID_CAUHOI: this.state.ID_CAUHOI,
+                SODKSH: ''
+            }
+        } 
         await fetch(sURL, {
             method: "POST",
             headers: {
@@ -134,34 +154,40 @@ class BauCuNhanSu extends Component {
                 return res.json();
             })
             .then(response => {
+                console.log("url_CoDong_xxx", response.Data);
                 if (response.State == true) {
                     this.setState({
-                        sodksh: response.Data.SODKSH,
-                        macodong: response.Data.MA_CODONG + '',
-                        SOCP_SOHUU: response.Data.SOCP_SOHUU + '',
-                        SOCP_UQ: response.Data.SOCP_SOHUU + '',
                         HOTEN: response.Data.HOTEN,
                     });
-
-                } else {
-                    alert('Tìm kiếm không thành công')
-                }
+                }  
                 this.setState({
                     isLoading: false
                 });
             })
             .catch(e => {
-                console.log('exp tk hash', e)
+                console.log('exp tkiem', e)
                 this.setState({
                     isLoading: false
                 });
-            });
+            }); 
 
     }
 
 
     btnGuiBQ = async () => {
-       
+        if (this.state.sodksh == '' || this.state.HOTEN == '' || this.state.SOCP_SOHUU == '') {
+            alert("Thông tin không hợp lệ")
+            return;
+        }
+
+        for (let index = 0; index < this.state.lstSoCPBau.length; index++) {
+            const e = this.state.lstSoCPBau[index];
+            if (e == undefined || e <= 0 || e.toString().indexOf('.') !== -1 || e == '') {
+                alert('Số phiếu bầu không hợp lệ');
+                return;
+            }
+        }
+ 
 
         await this.setState({
             isLoading: true,
@@ -173,11 +199,11 @@ class BauCuNhanSu extends Component {
             dataPush.push({
                 "MA_CODONG": this.state.macodong,
                 "SODKSH": this.state.sodksh,
-                "SOCP_SOHUU" : this.state.SOCP_SOHUU,
-                "ID_NHANSU" : element.ID_NHANSU,
-                "SOPHIEUBAU" : this.state.lstSoCPBau[index],
-                "KIEU_BAU" : this.state.NHOM_TV
-            })   
+                "SOCP_SOHUU": this.state.SOCP_SOHUU,
+                "ID_NHANSU": element.ID_NHANSU,
+                "SOPHIEUBAU": this.state.lstSoCPBau[index],
+                "KIEU_BAU": this.state.NHOM_TV
+            })
         });
         var dataPush = {
             PHIEU_BAU: dataPush
@@ -205,7 +231,10 @@ class BauCuNhanSu extends Component {
                 this.setState({
                     isLoading: false,
                     macodong: '',
-                    sodksh: ''
+                    sodksh: '',
+                    HOTEN: '',
+                    SOCP_SOHUU: '',
+                    lstSoCPBau: [],
                 });
             })
             .catch(e => {
@@ -219,18 +248,20 @@ class BauCuNhanSu extends Component {
     btnTimKiem = async () => {
         await this.setState({
             isLoading: true,
+            SOCP_SOHUU: '',
+            HOTEN: ''
         });
 
         var data = {};
         var sURL = '';
         if (this.state.macodong != '') {
-            sURL = await url_Checkin_MACD();
+            sURL = await url_BauCu_MACD();
             data = {
                 MA_CODONG: this.state.macodong
             }
         }
         else if (this.state.sodksh != '') {
-            sURL = await url_Checkin_SODKSH();
+            sURL = await url_BauCu_SODKSH();
             data = {
                 SODKSH: this.state.sodksh
             }
@@ -258,7 +289,7 @@ class BauCuNhanSu extends Component {
                         SOCP_UQ: response.Data.SOCP_DUOCUQ + '',
                         HOTEN: response.Data.HOTEN,
                     });
-
+                    alert('Tìm kiếm thành công')
                 } else {
                     alert('Tìm kiếm không thành công')
                 }
@@ -315,7 +346,7 @@ class BauCuNhanSu extends Component {
                                         />
                                     </View>
                                 </TouchableOpacity>
-                                
+
                             </View>
 
                             <ScrollView>

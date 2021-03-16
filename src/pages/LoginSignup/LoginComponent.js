@@ -34,7 +34,7 @@ class LoginComponent extends Component {
       loggedIn: false,
       username: '',
       password: '',
-      ipserver: '10.10.171.50',
+      ipserver: '10.10.171.190',
       isLoading: false,
     };
   }
