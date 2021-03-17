@@ -140,7 +140,7 @@ class BauCuNhanSu extends Component {
                 ID_CAUHOI: this.state.ID_CAUHOI,
                 SODKSH: ''
             }
-        } 
+        }
         else if (this.state.sodksh != '') {
             sURL = await url_BauCu_SODKSH();
             data = {
@@ -167,7 +167,7 @@ class BauCuNhanSu extends Component {
                     this.setState({
                         HOTEN: response.Data.HOTEN,
                     });
-                }  
+                }
                 this.setState({
                     isLoading: false
                 });
@@ -177,23 +177,25 @@ class BauCuNhanSu extends Component {
                 this.setState({
                     isLoading: false
                 });
-            }); 
+            });
 
     }
 
+    btnChiaDeu = async () => {
+        console.log('lstSoCPBau 1', this.state.lstSoCPBau);
+        var array = [...this.state.lstSoCPBau]; // make a separate copy of the array
+        for (let index = 0; index < this.state.lstNhanSu.length; index++) {
+            const element = this.state.lstNhanSu[index];
+            array[index] = '0';
+        }
+        console.log('lstSoCPBau 2', array);
+        this.setState({ lstSoCPBau: array }); 
+    }
 
-    btnGuiBQ = async () => {
+    btnKhongHopLe = async () => {
         if (this.state.sodksh == '' || this.state.HOTEN == '' || this.state.SOCP_SOHUU == '') {
             alert("Thông tin không hợp lệ")
             return;
-        }
-
-        for (let index = 0; index < this.state.lstSoCPBau.length; index++) {
-            const e = this.state.lstSoCPBau[index];
-            if (e == undefined || Number(e) <= 0 || e.toString().indexOf('.') !== -1 || e == '') {
-                alert('Số phiếu bầu không hợp lệ');
-                return;
-            }
         }
  
 
@@ -209,8 +211,81 @@ class BauCuNhanSu extends Component {
                 "SODKSH": this.state.sodksh,
                 "SOCP_SOHUU": this.state.SOCP_SOHUU,
                 "ID_NHANSU": element.ID_NHANSU,
+                "SOPHIEUBAU": 0,
+                "KIEU_BAU": this.state.NHOM_TV,
+                "HOP_LE": false
+            })
+        });
+        var dataPush = {
+            PHIEU_BAU: dataPush
+        };
+        console.log('data push', dataPush);
+        await fetch(sURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "username": this.props.agm.userAGM.userName,
+                "token": this.props.agm.userAGM.signInToken
+            },
+            body: JSON.stringify(dataPush)
+        })
+            .then(res => {
+                return res.json();
+            })
+            .then(response => {
+                console.log("url_NhanSu_ThemLo", response);
+                if (response.State == true) {
+                    alert('Thành công');
+                } else {
+                    alert(response.Message);
+                }
+                this.setState({
+                    isLoading: false,
+                    macodong: '',
+                    sodksh: '',
+                    HOTEN: '',
+                    SOCP_SOHUU: '',
+                    lstSoCPBau: [],
+                });
+            })
+            .catch(e => {
+                console.log('exp', e)
+                this.setState({
+                    isLoading: false
+                });
+            });
+    }
+
+    btnGuiBQ = async () => {
+        if (this.state.sodksh == '' || this.state.HOTEN == '' || this.state.SOCP_SOHUU == '') {
+            alert("Thông tin không hợp lệ")
+            return;
+        }
+
+        for (let index = 0; index < this.state.lstSoCPBau.length; index++) {
+            const e = this.state.lstSoCPBau[index];
+            if (e == undefined || Number(e) < 0 || e.toString().indexOf('.') !== -1 || e == '' || e.toString().indexOf(',') !== -1) {
+                alert('Số phiếu bầu không hợp lệ');
+                return;
+            }
+        }
+        console.log('socp bau', this.state.lstSoCPBau);
+
+        await this.setState({
+            isLoading: true,
+        });
+        var sURL = await url_NhanSu_ThemLo();
+        var data = this.state.lstNhanSu;
+        var dataPush = [];
+        data.forEach((element, index) => {
+            dataPush.push({
+                "MA_CODONG": this.state.macodong,
+                "SODKSH": this.state.sodksh,
+                "SOCP_SOHUU": this.state.SOCP_SOHUU,
+                "ID_NHANSU": element.ID_NHANSU,
                 "SOPHIEUBAU": this.state.lstSoCPBau[index],
-                "KIEU_BAU": this.state.NHOM_TV
+                "KIEU_BAU": this.state.NHOM_TV,
+                "HOP_LE": true
             })
         });
         var dataPush = {
@@ -487,6 +562,7 @@ class BauCuNhanSu extends Component {
                                     onSubmitEditing={() => this.refs.SOCP_SOHUU.focus()}
                                     ref='SOCP_SOHUU'
                                 />
+
                                 <View style={{ flexDirection: 'row', marginVertical: 6 }}>
                                     <View style={Styles.itm}>
                                         <View style={Styles.itb} />
@@ -503,6 +579,28 @@ class BauCuNhanSu extends Component {
                                         <View style={Styles.itb} />
                                     </View>
                                 </View>
+                                <TakeerButton
+                                    onPress={this.btnChiaDeu}
+                                    backgroundColor={Colors.green}
+                                    padding={15}
+                                    borderWidth={1}
+                                    borderRadius={5}
+                                    borderColor="transparent"
+                                    textColor="#fff"
+                                    textBold={false}
+                                    textItalic={false}
+                                    textSize={16}
+                                    textFont=""
+                                    text={"CHIA ĐỀU PHIẾU"} //button texts
+                                    showIcon={false} // if false, pass null to every icon attribute below
+                                    iconType="Ionicons" //Ionicons,Entypo, EvilIcons, FontAwesome, MaterialCommunityIcons, MaterialIcons, Octicons, SimpleLineIcons, Zocial, null
+                                    iconName="md-send" //icon name according to iconType or pass null to hide
+                                    iconSize={30}
+                                    iconColor="#fff"
+                                    iconPosition="right" //left, right, null
+                                    loading={false} //true or false -- true to show spinner/loading
+                                    loadingText="" // default is Loading.., you may pass any texts or null not to show
+                                />
                                 <TakeerText style={{
                                     color: Colors.textPrimary,
                                     fontSize: 18, marginTop: 10, fontWeight: 'bold'
@@ -572,28 +670,61 @@ class BauCuNhanSu extends Component {
 
 
                             </ScrollView>
-                            <TakeerButton
-                                onPress={this.btnGuiBQ}
-                                backgroundColor={Colors.green}
-                                padding={15}
-                                borderWidth={1}
-                                borderRadius={5}
-                                borderColor="transparent"
-                                textColor="#fff"
-                                textBold={false}
-                                textItalic={false}
-                                textSize={16}
-                                textFont=""
-                                text={"GỬI PHIẾU BẦU"} //button texts
-                                showIcon={false} // if false, pass null to every icon attribute below
-                                iconType="Ionicons" //Ionicons,Entypo, EvilIcons, FontAwesome, MaterialCommunityIcons, MaterialIcons, Octicons, SimpleLineIcons, Zocial, null
-                                iconName="md-send" //icon name according to iconType or pass null to hide
-                                iconSize={30}
-                                iconColor="#fff"
-                                iconPosition="right" //left, right, null
-                                loading={false} //true or false -- true to show spinner/loading
-                                loadingText="" // default is Loading.., you may pass any texts or null not to show
-                            />
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}
+                            >
+                                <View style={{ flex: 1, padding: 5 }}>
+                                    <TakeerButton
+                                        onPress={this.btnKhongHopLe}
+                                        backgroundColor={Colors.green}
+                                        padding={15}
+                                        borderWidth={1}
+                                        borderRadius={5}
+                                        borderColor="transparent"
+                                        textColor="#fff"
+                                        textBold={false}
+                                        textItalic={false}
+                                        textSize={16}
+                                        textFont=""
+                                        text={"KHÔNG HỢP LỆ"} //button texts
+                                        showIcon={false} // if false, pass null to every icon attribute below
+                                        iconType="Ionicons" //Ionicons,Entypo, EvilIcons, FontAwesome, MaterialCommunityIcons, MaterialIcons, Octicons, SimpleLineIcons, Zocial, null
+                                        iconName="md-send" //icon name according to iconType or pass null to hide
+                                        iconSize={30}
+                                        iconColor="#fff"
+                                        iconPosition="right" //left, right, null
+                                        loading={false} //true or false -- true to show spinner/loading
+                                        loadingText="" // default is Loading.., you may pass any texts or null not to show
+                                    />
+                                </View>
+                                <View style={{ flex: 1, padding: 5 }}>
+                                    <TakeerButton
+                                        onPress={this.btnGuiBQ}
+                                        backgroundColor={Colors.green}
+                                        padding={15}
+                                        borderWidth={1}
+                                        borderRadius={5}
+                                        borderColor="transparent"
+                                        textColor="#fff"
+                                        textBold={false}
+                                        textItalic={false}
+                                        textSize={16}
+                                        textFont=""
+                                        text={"GỬI PHIẾU BẦU"} //button texts
+                                        showIcon={false} // if false, pass null to every icon attribute below
+                                        iconType="Ionicons" //Ionicons,Entypo, EvilIcons, FontAwesome, MaterialCommunityIcons, MaterialIcons, Octicons, SimpleLineIcons, Zocial, null
+                                        iconName="md-send" //icon name according to iconType or pass null to hide
+                                        iconSize={30}
+                                        iconColor="#fff"
+                                        iconPosition="right" //left, right, null
+                                        loading={false} //true or false -- true to show spinner/loading
+                                        loadingText="" // default is Loading.., you may pass any texts or null not to show
+                                    />
+                                </View>
+
+
+
+                            </View>
+
 
                         </View>
                     </KeyboardAvoidingView>

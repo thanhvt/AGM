@@ -214,7 +214,8 @@ class UyQuyen extends Component {
             return;
         }
         console.log(this.state);
-        if (Number(this.state.SOCP_SOHUU) < Number(this.state.SOCP_UQ) || Number(this.state.SOCP_UQ) <= 0 || this.state.SOCP_UQ.toString().indexOf('.') !== -1) {
+        if (Number(this.state.SOCP_SOHUU) < Number(this.state.SOCP_UQ)  || e.toString().indexOf(',') !== -1
+                      || Number(this.state.SOCP_UQ) <= 0 || this.state.SOCP_UQ.toString().indexOf('.') !== -1) {
             alert('Số CP uỷ quyền không hợp lệ');
             return;
         }
@@ -425,7 +426,7 @@ class UyQuyen extends Component {
                                     ref='HOTEN'
                                 />
                                 <View style={{ marginVertical: 5 }}></View>
-                                <TakeerText style={styles.normalText}>Số cổ phần sở hữu</TakeerText>
+                                <TakeerText style={styles.normalText}>Số cổ phần sở hữu còn lại</TakeerText>
                                 <TextInput
                                     editable={false}
                                     placeholder="..."
