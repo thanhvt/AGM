@@ -148,8 +148,13 @@ class AGMUyQuyen extends Component {
         var lstTK = this.state.lstFULL.filter(c => c.NGUOI_UQ.indexOf(txtTim.nativeEvent.text) !== -1
         || c.CMTDUOC_UQ.indexOf(txtTim.nativeEvent.text) !== -1
         || c.CMT_NGUOIUQ.indexOf(txtTim.nativeEvent.text) !== -1
-        || c.MA_CODONG.indexOf(txtTim.nativeEvent.text) !== -1
+        || c.MA_CODONG.toString().indexOf(txtTim.nativeEvent.text) !== -1
         || c.NGUOIDUOC_UQ.indexOf(txtTim.nativeEvent.text) !== -1);
+
+        if (lstTK.length == 0) {
+            alert('Không tìm thấy thông tin')
+        }
+
         this.setState({ lstUyQuyen: lstTK });
     }
 

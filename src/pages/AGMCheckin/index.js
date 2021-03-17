@@ -93,7 +93,8 @@ class Checkin extends Component {
         var sURL = await url_Checkin_InLai();
         var data = {
             MA_CODONG: this.state.MA_CODONG,
-            REASON: this.state.txtLyDoInLai
+            REASON: this.state.txtLyDoInLai,
+            CMT: this.state.CMT
         };
         await fetch(sURL, {
             method: "POST",
@@ -131,7 +132,7 @@ class Checkin extends Component {
         this.setState({
             dgLyDoInLai: true,
             MA_CODONG: MA_CODONG,
-            CMT: SODKSH
+            CMT: CMT
         });
     }
 
@@ -183,8 +184,13 @@ class Checkin extends Component {
     }
 
     txtTimKiemSubmit = (txtTim) => {
+        console.log(this.state.lstFULL);
+
         var lstTK = this.state.lstFULL.filter(c => c.CMT.indexOf(txtTim.nativeEvent.text) !== -1
-                        || c.MA_CODONG.indexOf(txtTim.nativeEvent.text) !== -1);
+                        || c.MA_CODONG.toString().indexOf(txtTim.nativeEvent.text) !== -1);
+        if (lstTK.length == 0) {
+            alert('Không tìm thấy thông tin')
+        }
         this.setState({ lstCheckin: lstTK });
     }
 

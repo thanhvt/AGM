@@ -120,7 +120,7 @@ class BauCuNhanSu extends Component {
         var result = e.data.replace(/-/g, '');
         var splitData = result.split('|');
         console.log(splitData);
-        this.setState({
+        await this.setState({
             sodksh: splitData[2],
             macodong: splitData[3],
             SOCP_SOHUU: splitData[1],
@@ -128,12 +128,12 @@ class BauCuNhanSu extends Component {
             HOTEN: '',
         });
 
-        await this.setState({
-            // isLoading: true,
-        });
+        // await this.setState({
+        //     isLoading: true,
+        // });
         var data = {};
         var sURL = '';
-        if (this.state.macodong != '') {
+        if (this.state.macodong != '' && this.state.macodong != 0) {
             sURL = await url_BauCu_MACD();
             data = {
                 MA_CODONG: this.state.macodong,
@@ -141,6 +141,14 @@ class BauCuNhanSu extends Component {
                 SODKSH: ''
             }
         } 
+        else if (this.state.sodksh != '') {
+            sURL = await url_BauCu_SODKSH();
+            data = {
+                MA_CODONG: '',
+                ID_CAUHOI: this.state.ID_CAUHOI,
+                SODKSH: this.state.sodksh
+            }
+        }
         await fetch(sURL, {
             method: "POST",
             headers: {
@@ -182,7 +190,7 @@ class BauCuNhanSu extends Component {
 
         for (let index = 0; index < this.state.lstSoCPBau.length; index++) {
             const e = this.state.lstSoCPBau[index];
-            if (e == undefined || e <= 0 || e.toString().indexOf('.') !== -1 || e == '') {
+            if (e == undefined || Number(e) <= 0 || e.toString().indexOf('.') !== -1 || e == '') {
                 alert('Số phiếu bầu không hợp lệ');
                 return;
             }
@@ -290,6 +298,8 @@ class BauCuNhanSu extends Component {
                         HOTEN: response.Data.HOTEN,
                     });
                     alert('Tìm kiếm thành công')
+                } else if (response.Message != '') {
+                    alert(response.Message)
                 } else {
                     alert('Tìm kiếm không thành công')
                 }
@@ -398,7 +408,6 @@ class BauCuNhanSu extends Component {
                                     placeholderTextColor={Colors.textSecondary}
                                     textColor={Colors.textWhite}
                                     underlineColorAndroid="transparent"
-                                    keyboardType="numeric"
                                     style={styles.input}
                                     value={this.state.sodksh}
                                     onChangeText={(sodksh) => this.setState({ sodksh })}

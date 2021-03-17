@@ -85,8 +85,6 @@ class UyQuyen extends Component {
     };
 
     onSuccess = async (e) => {
-        const check = e.data.substring(0, 4);
-
         console.log('scanned data' + e.data);
         this.setState({
             result: e.data,
@@ -95,9 +93,9 @@ class UyQuyen extends Component {
             dgQR: false
         });
 
-        await this.setState({
-            isLoading: true,
-        });
+        // await this.setState({
+        //     isLoading: true,
+        // });
 
         var data = {};
         var sURL = await url_Checkin_HASHCODE();
@@ -126,6 +124,8 @@ class UyQuyen extends Component {
                         HOTEN: response.Data.HOTEN,
                     });
                     alert('Tìm kiếm thành công')
+                } else if (response.Message != '') {
+                    alert(response.Message)
                 } else {
                     alert('Tìm kiếm không thành công')
                 }
@@ -164,6 +164,7 @@ class UyQuyen extends Component {
                 SODKSH: this.state.sodksh
             }
         }
+        console.log('macodong', this.state.macodong);
         await fetch(sURL, {
             method: "POST",
             headers: {
@@ -177,11 +178,12 @@ class UyQuyen extends Component {
                 return res.json();
             })
             .then(response => {
-                console.log("url_CoDong_xxx", response.Data);
+                console.log("url_CoDong_xxx", response);
+
                 if (response.State == true) {
                     this.setState({
                         sodksh: response.Data.SODKSH,
-                        // macodong: response.Data.MA_CODONG,
+                        macodong: response.Data.MA_CODONG + '',
                         SOCP_SOHUU: response.Data.SOCP_SOHUU + '',
                         SOCP_UQ: response.Data.SOCP_SOHUU + '',
                         HOTEN: response.Data.HOTEN,
@@ -207,13 +209,12 @@ class UyQuyen extends Component {
 
     btnUyQuyen = async () => {
 
-
         if (this.state.SOCP_UQ == '' || this.state.NGUOIDUOC_UQ == '' || this.state.CMTDUOC_UQ == '') {
             alert('Cần điền đầy đủ thông tin');
             return;
         }
-
-        if (this.state.SOCP_SOHUU < this.state.SOCP_UQ || this.state.SOCP_UQ <= 0 || this.state.SOCP_UQ.toString().indexOf('.') !== -1) {
+        console.log(this.state);
+        if (Number(this.state.SOCP_SOHUU) < Number(this.state.SOCP_UQ) || Number(this.state.SOCP_UQ) <= 0 || this.state.SOCP_UQ.toString().indexOf('.') !== -1) {
             alert('Số CP uỷ quyền không hợp lệ');
             return;
         }
@@ -237,6 +238,8 @@ class UyQuyen extends Component {
             MA_CODONG: this.state.macodong
 
         };
+
+        console.log('data', data)
         await fetch(sURL, {
             method: "POST",
             headers: {

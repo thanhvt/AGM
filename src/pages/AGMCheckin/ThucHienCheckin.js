@@ -74,21 +74,20 @@ class ThucHienCheckin extends Component {
     };
 
     onSuccess = async (e) => {
-        const check = e.data.substring(0, 4);
-
-        // alert(e.data);
         console.log('scanned data ' + e.data);
         await this.setState({
             result: e.data,
             scan: false,
             ScanResult: true,
-            // macodong: e.data,
-            dgQR: false
+            dgQR: false,
+            SOCP_SOHUU: '',
+            SOCP_UQ: '',
+            HOTEN: '',
         });
 
-        await this.setState({
-            isLoading: true,
-        });
+        // await this.setState({
+        //     isLoading: true,
+        // });
 
         var data = {};
         var sURL = await url_Checkin_HASHCODE();
@@ -114,11 +113,13 @@ class ThucHienCheckin extends Component {
                         sodksh: response.Data.SODKSH,
                         macodong: response.Data.MA_CODONG + '',
                         SOCP_SOHUU: response.Data.SOCP_SOHUU + '',
-                        SOCP_UQ: response.Data.SOCP_SOHUU + '',
+                        SOCP_UQ: response.Data.SOCP_DUOCUQ + '',
                         HOTEN: response.Data.HOTEN,
                         disInGop: response.Data.NOI_BO == 0 && response.Data.HCM == 0
                     });
                     alert('Tìm kiếm thành công');
+                } else if (response.Message != '') {
+                    alert(response.Message)
                 } else {
                     alert('Tìm kiếm không thành công')
                 }
@@ -188,6 +189,8 @@ class ThucHienCheckin extends Component {
                         disInGop: response.Data.NOI_BO == 0 && response.Data.HCM == 0
                     });
                     alert('Tìm kiếm thành công');
+                } else if (response.Message != '') {
+                    alert(response.Message)
                 } else {
                     alert('Tìm kiếm không thành công');
                 }
@@ -209,7 +212,7 @@ class ThucHienCheckin extends Component {
             alert('Thông tin không hợp lệ');
             return;
         }
-        
+
 
         console.log('this.state.inGop', this.state.inGop)
         await this.setState({
@@ -217,7 +220,7 @@ class ThucHienCheckin extends Component {
         });
         var sURL;
         var data = {};
-        if (this.state.macodong != '') {
+        if (this.state.macodong != '' && this.state.macodong != 0) {
             sURL = await url_Checkin_Them_ByMaCD();
             data = {
                 MA_CODONG: this.state.macodong,
@@ -225,7 +228,7 @@ class ThucHienCheckin extends Component {
                 CMT: this.state.sodksh,
             };
         }
-        else {
+        else if (this.state.sodksh != '') {
             sURL = await url_Checkin_Them_BySoDKSH();
             data = {
                 MA_CODONG: this.state.macodong = '' ? 0 : this.state.macodong,
@@ -233,7 +236,7 @@ class ThucHienCheckin extends Component {
                 IN_GOP: this.state.inGop == false ? 0 : 1
             };
         }
-       
+        console.log(data, sURL);
         await fetch(sURL, {
             method: "POST",
             headers: {
@@ -348,7 +351,6 @@ class ThucHienCheckin extends Component {
                                 placeholderTextColor={Colors.textSecondary}
                                 textColor={Colors.textWhite}
                                 underlineColorAndroid="transparent"
-                                keyboardType="numeric"
                                 style={styles.input}
                                 value={this.state.sodksh}
                                 onChangeText={(sodksh) => this.setState({ sodksh })}
@@ -431,7 +433,7 @@ class ThucHienCheckin extends Component {
                             <View style={{ marginVertical: 5 }}></View>
                             <TakeerText style={styles.normalText}>Số cổ phần được uỷ quyền</TakeerText>
                             <TextInput
-                                editable={false}  
+                                editable={false}
                                 placeholder="..."
                                 placeholderTextColor={Colors.textSecondary}
                                 textColor={Colors.textWhite}
@@ -444,11 +446,20 @@ class ThucHienCheckin extends Component {
                                 ref='SOCP_UQ'
                                 returnKeyType='next'
                             />
-                            <View style={{ flexDirection: 'row', marginTop: 20, marginLeft: -5 }}>
+                            {this.state.disInGop == false ? 
+                            <TouchableOpacity style={{ flexDirection: 'row', marginTop: 20, marginLeft: -5 }}
+                                onPress={() => this.toggleSwitch1()}>
                                 <CheckBox style={{ marginRight: 30 }} checked={this.state.inGop} disabled={this.state.disInGop}
                                     onPress={() => this.toggleSwitch1()} color="yellow" />
                                 <TakeerText style={styles.normalText}>In gộp</TakeerText>
-                            </View>
+                            </TouchableOpacity>
+                            : 
+                            <View></View>}
+                            {/* <View style={{ flexDirection: 'row', marginTop: 20, marginLeft: -5 }}>
+                                <CheckBox style={{ marginRight: 30 }} checked={this.state.inGop} disabled={this.state.disInGop}
+                                    onPress={() => this.toggleSwitch1()} color="yellow" />
+                                <TakeerText style={styles.normalText}>In gộp</TakeerText>
+                            </View> */}
 
                         </ScrollView>
                         {this.state.HOTEN != '' ? <TakeerButton
@@ -474,7 +485,7 @@ class ThucHienCheckin extends Component {
                             loadingText="" // default is Loading.., you may pass any texts or null not to show
                         /> : <View></View>
                         }
-                        
+
 
                     </View>
                 </KeyboardAvoidingView>

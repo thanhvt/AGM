@@ -129,7 +129,7 @@ class BieuQuyetCauHoi extends Component {
         var result = e.data.replace(/-/g, '');
         var splitData = result.split('|');
         console.log(splitData);
-        this.setState({
+        await this.setState({
             sodksh: splitData[2],
             macodong: splitData[3],
             SOCP_SOHUU: splitData[1],
@@ -137,20 +137,30 @@ class BieuQuyetCauHoi extends Component {
             HOTEN: '',
         });
 
-        await this.setState({
-            // isLoading: true,
-        });
+        // await this.setState({
+        //     isLoading: true,
+        // });
 
         var data = {};
         var sURL = '';
-        if (this.state.macodong != '') {
+        if (this.state.macodong != '' && this.state.macodong != 0) {
             sURL = await url_BauCu_MACD();
             data = {
                 MA_CODONG: this.state.macodong,
                 ID_CAUHOI: this.state.ID_CAUHOI,
                 SODKSH: ''
             }
-        } 
+        }
+        else if (this.state.sodksh != '') {
+            sURL = await url_BauCu_SODKSH();
+            data = {
+                MA_CODONG: '',
+                ID_CAUHOI: this.state.ID_CAUHOI,
+                SODKSH: this.state.sodksh
+            }
+        }
+        console.log(data, sURL);
+
         await fetch(sURL, {
             method: "POST",
             headers: {
@@ -169,7 +179,7 @@ class BieuQuyetCauHoi extends Component {
                     this.setState({
                         HOTEN: response.Data.HOTEN,
                     });
-                }  
+                }
                 this.setState({
                     isLoading: false
                 });
@@ -179,7 +189,7 @@ class BieuQuyetCauHoi extends Component {
                 this.setState({
                     isLoading: false
                 });
-            }); 
+            });
     }
 
     btnHangDoi = async () => {
@@ -259,7 +269,10 @@ class BieuQuyetCauHoi extends Component {
                 console.log("url_Answer_ThemLo", response);
                 if (response.State == true) {
                     alert('Thành công');
-                    
+                    this.state.lstBQHangDoi.forEach(e => {
+                        this.btnXoaHangDoi(e);
+                    })
+
                     // ThanhVT xoá trong hàng đợi
                 } else {
                     alert(response.Message);
@@ -372,16 +385,19 @@ class BieuQuyetCauHoi extends Component {
                 return res.json();
             })
             .then(response => {
-                console.log("url_CoDong_xxx", response.Data);
+                console.log("url_CoDong_xxx", response);
                 if (response.State == true) {
                     this.setState({
                         sodksh: response.Data.SODKSH,
                         macodong: response.Data.MA_CODONG + '',
                         SOCP_SOHUU: response.Data.SOCP_SOHUU + '',
-                        SOCP_UQ: response.Data.SOCP_DUOCUQ + '',
+                        // SOCP_UQ: response.Data.SOCP_DUOCUQ + '',
                         HOTEN: response.Data.HOTEN,
                     });
 
+                } 
+                else if (response.Message != '') {
+                    alert(response.Message)
                 } else {
                     alert('Tìm kiếm không thành công')
                 }
@@ -423,7 +439,6 @@ class BieuQuyetCauHoi extends Component {
                 this.setState({ lstBQHangDoi: lstBQHangDoi });
                 await AsyncStorage.setItem('LIST_BIEUQUYETCAUHOI', JSON.stringify(lstBQHangDoi));
             }
-             
         }
     }
 
@@ -523,7 +538,6 @@ class BieuQuyetCauHoi extends Component {
                                     placeholderTextColor={Colors.textSecondary}
                                     textColor={Colors.textWhite}
                                     underlineColorAndroid="transparent"
-                                    keyboardType="numeric"
                                     style={styles.input}
                                     value={this.state.sodksh}
                                     onChangeText={(sodksh) => this.setState({ sodksh })}
@@ -692,13 +706,13 @@ class BieuQuyetCauHoi extends Component {
                                                     <TakeerText style={Styles.latestTitle}>{v.SODKSH} - {v.HOTEN}</TakeerText>
                                                 </View>
                                                 <TouchableOpacity onPress={() => this.btnXoaHangDoi(v)}>
-                                                        <TakeerIcon
-                                                            iconType="FontAwesome"
-                                                            iconName="remove"
-                                                            iconSize={30}
-                                                            iconColor={Colors.textWhite}
-                                                            iconPosition="" //left, right, null
-                                                        />
+                                                    <TakeerIcon
+                                                        iconType="FontAwesome"
+                                                        iconName="remove"
+                                                        iconSize={30}
+                                                        iconColor={Colors.textWhite}
+                                                        iconPosition="" //left, right, null
+                                                    />
                                                 </TouchableOpacity>
                                             </View>
 
