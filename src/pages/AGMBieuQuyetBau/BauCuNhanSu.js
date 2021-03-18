@@ -86,15 +86,12 @@ class BauCuNhanSu extends Component {
             TEN_NHOM: item.TEN_NHOM,
             lstNhanSu: item.LST_NHANSU
         });
-        await this.setState({
-            isLoading: true,
-        });
-
-
-
-        await this.setState({
-            isLoading: false,
-        });
+        
+        var array = [...this.state.lstSoCPBau]; // make a separate copy of the array
+        for (let index = 0; index < this.state.lstNhanSu.length; index++) {
+            array[index] = '0';
+        }
+        this.setState({ lstSoCPBau: array }); 
 
     }
 
@@ -186,7 +183,7 @@ class BauCuNhanSu extends Component {
         var array = [...this.state.lstSoCPBau]; // make a separate copy of the array
         for (let index = 0; index < this.state.lstNhanSu.length; index++) {
             const element = this.state.lstNhanSu[index];
-            array[index] = '0';
+            array[index] = this.state.SOCP_SOHUU + '';
         }
         console.log('lstSoCPBau 2', array);
         this.setState({ lstSoCPBau: array }); 
