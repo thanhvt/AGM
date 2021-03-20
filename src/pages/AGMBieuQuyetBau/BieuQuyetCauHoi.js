@@ -132,7 +132,7 @@ class BieuQuyetCauHoi extends Component {
         await this.setState({
             sodksh: splitData[2],
             macodong: splitData[3],
-            SOCP_SOHUU: splitData[1],
+            SOCP_SOHUU: Number(splitData[1]) + Number(splitData[0]) + '',
             SOCP_UQ: splitData[0],
             HOTEN: '',
         });

@@ -120,7 +120,7 @@ class BauCuNhanSu extends Component {
         await this.setState({
             sodksh: splitData[2],
             macodong: splitData[3],
-            SOCP_SOHUU: splitData[1],
+            SOCP_SOHUU: Number(splitData[1]) + Number(splitData[0]) + '',
             SOCP_UQ: splitData[0],
             HOTEN: '',
         });
@@ -366,7 +366,7 @@ class BauCuNhanSu extends Component {
                         sodksh: response.Data.SODKSH,
                         macodong: response.Data.MA_CODONG + '',
                         SOCP_SOHUU: response.Data.SOCP_SOHUU + '',
-                        SOCP_UQ: response.Data.SOCP_DUOCUQ + '',
+                        // SOCP_UQ: response.Data.SOCP_DUOCUQ + '',
                         HOTEN: response.Data.HOTEN,
                     });
                     alert('Tìm kiếm thành công')
@@ -545,7 +545,7 @@ class BauCuNhanSu extends Component {
                                     ref='HOTEN'
                                 />
                                 <View style={{ marginVertical: 5 }}></View>
-                                <TakeerText style={styles.normalText}>Số cổ phần sở hữu</TakeerText>
+                                <TakeerText style={styles.normalText}>Số cổ phần sở hữu và được UQ(nếu có)</TakeerText>
                                 <TextInput
                                     editable={false}
                                     placeholder="..."
