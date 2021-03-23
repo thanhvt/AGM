@@ -259,7 +259,10 @@ class ThucHienCheckin extends Component {
                 this.setState({
                     isLoading: false,
                     macodong: '',
-                    sodksh: ''
+                    sodksh: '',
+                    SOCP_SOHUU: '',
+                    SOCP_UQ: '',
+                    HOTEN: '',
                 });
             })
             .catch(e => {

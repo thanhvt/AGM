@@ -143,20 +143,22 @@ class BieuQuyetCauHoi extends Component {
 
         var data = {};
         var sURL = '';
-        if (this.state.macodong != '' && this.state.macodong != 0) {
+        if (this.state.macodong != '' && this.state.macodong != 0 && this.state.macodong != '0') {
             sURL = await url_BauCu_MACD();
             data = {
                 MA_CODONG: this.state.macodong,
                 ID_CAUHOI: this.state.ID_CAUHOI,
-                SODKSH: ''
+                SODKSH: '',
+                GET_NAME: true
             }
         }
         else if (this.state.sodksh != '') {
             sURL = await url_BauCu_SODKSH();
             data = {
-                MA_CODONG: '',
+                MA_CODONG: '0',
                 ID_CAUHOI: this.state.ID_CAUHOI,
-                SODKSH: this.state.sodksh
+                SODKSH: this.state.sodksh,
+                GET_NAME: true
             }
         }
         console.log(data, sURL);
@@ -174,7 +176,7 @@ class BieuQuyetCauHoi extends Component {
                 return res.json();
             })
             .then(response => {
-                console.log("url_CoDong_xxx", response.Data);
+                console.log("url_CoDong_xxx", response);
                 if (response.State == true) {
                     this.setState({
                         HOTEN: response.Data.HOTEN,
@@ -269,10 +271,10 @@ class BieuQuyetCauHoi extends Component {
                 console.log("url_Answer_ThemLo", response);
                 if (response.State == true) {
                     alert('Thành công');
-                    this.state.lstBQHangDoi.forEach(e => {
-                        this.btnXoaHangDoi(e);
-                    })
-
+                    // this.state.lstBQHangDoi.forEach(e => {
+                    //     this.btnXoaHangDoi(e);
+                    // })
+                    this.thucHienXoaHangDoi();
                     // ThanhVT xoá trong hàng đợi
                 } else {
                     alert(response.Message);
@@ -360,7 +362,8 @@ class BieuQuyetCauHoi extends Component {
             data = {
                 MA_CODONG: this.state.macodong,
                 ID_CAUHOI: this.state.ID_CAUHOI,
-                SODKSH: ''
+                SODKSH: '',
+                GET_NAME: false
             }
         }
         else if (this.state.sodksh != '') {
@@ -368,7 +371,8 @@ class BieuQuyetCauHoi extends Component {
             data = {
                 SODKSH: this.state.sodksh,
                 MA_CODONG: 0,
-                ID_CAUHOI: this.state.ID_CAUHOI
+                ID_CAUHOI: this.state.ID_CAUHOI,
+                GET_NAME: false
             }
         }
         console.log('data tk', data)
@@ -413,6 +417,22 @@ class BieuQuyetCauHoi extends Component {
             });
     }
 
+    thucHienXoaHangDoi = async () => {
+        var LIST_BIEUQUYETCAUHOI = await AsyncStorage.getItem("LIST_BIEUQUYETCAUHOI");
+        console.log('1', LIST_BIEUQUYETCAUHOI);
+        var lstBQHangDoi = [];
+        var lstPush = [];
+        if (LIST_BIEUQUYETCAUHOI != undefined && LIST_BIEUQUYETCAUHOI != null) {
+            lstBQHangDoi = JSON.parse(LIST_BIEUQUYETCAUHOI);
+            console.log('2', lstBQHangDoi);
+            lstBQHangDoi.forEach((element, i) => {
+                if (element.ID_CAUHOI != this.state.ID_CAUHOI) lstPush.push(element);
+            });
+            this.setState({ lstBQHangDoi: [] });
+            await AsyncStorage.setItem('LIST_BIEUQUYETCAUHOI', JSON.stringify(lstPush));
+        }
+    }
+
     btnXoaHangDoi = async (v) => {
         console.log(v);
         // var array = [...this.state.lstBQHangDoi]; // make a separate copy of the array
@@ -437,6 +457,7 @@ class BieuQuyetCauHoi extends Component {
             if (index !== -1) {
                 lstBQHangDoi.splice(index, 1);
                 this.setState({ lstBQHangDoi: lstBQHangDoi });
+                console.log('lstBQHangDoi', lstBQHangDoi);
                 await AsyncStorage.setItem('LIST_BIEUQUYETCAUHOI', JSON.stringify(lstBQHangDoi));
             }
         }
@@ -701,7 +722,7 @@ class BieuQuyetCauHoi extends Component {
 
                                         <View style={[Styles.latestContentHolder, { flex: 1 }]}>
                                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'flex-start', flex: 0.9 }}>
                                                     <TakeerText style={Styles.latestTitle}>{i + 1}. </TakeerText>
                                                     <TakeerText style={Styles.latestTitle}>{v.SODKSH} - {v.HOTEN}</TakeerText>
                                                 </View>

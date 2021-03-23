@@ -130,20 +130,22 @@ class BauCuNhanSu extends Component {
         // });
         var data = {};
         var sURL = '';
-        if (this.state.macodong != '' && this.state.macodong != 0) {
+        if (this.state.macodong != '' && this.state.macodong != 0 && this.state.macodong != '0') {
             sURL = await url_BauCu_MACD();
             data = {
                 MA_CODONG: this.state.macodong,
                 ID_CAUHOI: this.state.ID_CAUHOI,
-                SODKSH: ''
+                SODKSH: '',
+                GET_NAME: true
             }
         }
         else if (this.state.sodksh != '') {
             sURL = await url_BauCu_SODKSH();
             data = {
-                MA_CODONG: '',
+                MA_CODONG: '0',
                 ID_CAUHOI: this.state.ID_CAUHOI,
-                SODKSH: this.state.sodksh
+                SODKSH: this.state.sodksh,
+                GET_NAME: true
             }
         }
         await fetch(sURL, {
@@ -159,7 +161,7 @@ class BauCuNhanSu extends Component {
                 return res.json();
             })
             .then(response => {
-                console.log("url_CoDong_xxx", response.Data);
+                console.log("url_CoDong_xxx", response);
                 if (response.State == true) {
                     this.setState({
                         HOTEN: response.Data.HOTEN,
@@ -337,13 +339,15 @@ class BauCuNhanSu extends Component {
         if (this.state.macodong != '') {
             sURL = await url_BauCu_MACD();
             data = {
-                MA_CODONG: this.state.macodong
+                MA_CODONG: this.state.macodong,
+                GET_NAME: false
             }
         }
         else if (this.state.sodksh != '') {
             sURL = await url_BauCu_SODKSH();
             data = {
-                SODKSH: this.state.sodksh
+                SODKSH: this.state.sodksh,
+                GET_NAME: false
             }
         }
         console.log('data tk', data)
