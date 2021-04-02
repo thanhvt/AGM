@@ -3,7 +3,7 @@ import {
     View,
     Image,
     TouchableOpacity,
-    ScrollView,
+    ScrollView, Alert,
     TextInput, KeyboardAvoidingView, Modal,
     Keyboard, ImageBackground, Text,
     SafeAreaView, Dimensions
@@ -214,7 +214,7 @@ class UyQuyen extends Component {
             return;
         }
         console.log(this.state);
-        if (Number(this.state.SOCP_SOHUU) < Number(this.state.SOCP_UQ)  || e.toString().indexOf(',') !== -1
+        if (Number(this.state.SOCP_SOHUU) < Number(this.state.SOCP_UQ)  || this.state.SOCP_UQ.toString().indexOf(',') !== -1
                       || Number(this.state.SOCP_UQ) <= 0 || this.state.SOCP_UQ.toString().indexOf('.') !== -1) {
             alert('Số CP uỷ quyền không hợp lệ');
             return;
@@ -256,7 +256,28 @@ class UyQuyen extends Component {
             .then(response => {
                 console.log("url_UyQuyen_Them", response);
                 if (response.State == true) {
-                    alert('Thành công')
+                    Alert.alert(
+                        'Thành công',
+                        'Bạn có muốn tiếp tục thực hiện UQ ?',
+                        [
+                            {
+                                text: 'Với người hiện tại', onPress: () => {
+
+                                }
+                            },
+                            {
+                                text: 'Quay lại',
+                                onPress: () => {
+                                    this.setState({
+                                        NGUOIDUOC_UQ: '',
+                                        CMTDUOC_UQ: '',
+                                    });
+                                },
+                                style: 'cancel',
+                            }
+                        ],
+                        { cancelable: false },
+                    );
                 } else {
                     alert(response.Message);
                 }
@@ -267,8 +288,6 @@ class UyQuyen extends Component {
                     HOTEN: '',
                     SOCP_SOHUU: '',
                     SOCP_UQ: '',
-                    NGUOIDUOC_UQ: '',
-                    CMTDUOC_UQ: '',
                 });
             })
             .catch(e => {

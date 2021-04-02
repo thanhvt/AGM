@@ -182,6 +182,15 @@ class BieuQuyetCauHoi extends Component {
                         HOTEN: response.Data.HOTEN,
                     });
                 }
+                else if (response.Message != '') {
+                    alert(response.Message);
+                    this.setState({
+                        sodksh: '',
+                        macodong: '',
+                        SOCP_SOHUU: '',
+                        HOTEN: ''
+                    });
+                }
                 this.setState({
                     isLoading: false
                 });
@@ -489,10 +498,10 @@ class BieuQuyetCauHoi extends Component {
                                     </View>
                                 </TouchableOpacity>
                                 <View>
-                                    <TakeerText style={{ textAlign: 'center', fontWeight: 'bold', color: Colors.textPrimary }}>
+                                    <TakeerText style={{ textAlign: 'center', fontWeight: 'bold', color: Colors.textPrimary, fontSize: 25  }}>
                                         Biếu quyết câu hỏi số {STT}
                                     </TakeerText>
-                                    <TakeerText style={{ textAlign: 'center', color: Colors.textPrimary, fontSize: 10 }}>
+                                    <TakeerText style={{ textAlign: 'center', color: Colors.textPrimary, fontSize: 20 }}>
                                         {KETQUA == 0 ? "Không đồng ý" : "Khác"}
                                     </TakeerText>
                                 </View>
@@ -511,7 +520,7 @@ class BieuQuyetCauHoi extends Component {
                             </View>
 
                             <ScrollView>
-                                <TakeerText style={{ textAlign: 'center', color: Colors.textPrimary, fontSize: 16 }}>
+                                <TakeerText style={{ textAlign: 'center', color: Colors.textPrimary, fontSize: 16, marginTop: 3 }}>
                                     {NOIDUNG}
                                 </TakeerText>
                                 {/* Time Separator */}

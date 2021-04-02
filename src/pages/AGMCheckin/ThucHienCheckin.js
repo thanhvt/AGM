@@ -115,7 +115,8 @@ class ThucHienCheckin extends Component {
                         SOCP_SOHUU: response.Data.SOCP_SOHUU + '',
                         SOCP_UQ: response.Data.SOCP_DUOCUQ + '',
                         HOTEN: response.Data.HOTEN,
-                        disInGop: response.Data.NOI_BO == 0 && response.Data.HCM == 0
+                        // disInGop: response.Data.NOI_BO == 0 && response.Data.HCM == 0
+                        inGop: response.Data.HCM == 1 || response.Data.NOI_BO == 1 ? true : false
                     });
                     alert('Tìm kiếm thành công');
                 } else if (response.Message != '') {
@@ -186,7 +187,8 @@ class ThucHienCheckin extends Component {
                         SOCP_SOHUU: response.Data.SOCP_SOHUU + '',
                         SOCP_UQ: response.Data.SOCP_DUOCUQ + '',
                         HOTEN: response.Data.HOTEN,
-                        disInGop: response.Data.NOI_BO == 0 && response.Data.HCM == 0
+                        // disInGop: response.Data.NOI_BO == 0 && response.Data.HCM == 0
+                        inGop: response.Data.HCM == 1 || response.Data.NOI_BO == 1 ? true : false
                     });
                     alert('Tìm kiếm thành công');
                 } else if (response.Message != '') {
@@ -250,7 +252,7 @@ class ThucHienCheckin extends Component {
                 return res.json();
             })
             .then(response => {
-                console.log("url_Checkin_Them_BySoDKSH", response);
+                console.log("url_Checkin", sURL, response);
                 if (response.State == true) {
                     alert('Thành công')
                 } else {
@@ -457,12 +459,7 @@ class ThucHienCheckin extends Component {
                                 <TakeerText style={styles.normalText}>In gộp</TakeerText>
                             </TouchableOpacity>
                             : 
-                            <View></View>}
-                            {/* <View style={{ flexDirection: 'row', marginTop: 20, marginLeft: -5 }}>
-                                <CheckBox style={{ marginRight: 30 }} checked={this.state.inGop} disabled={this.state.disInGop}
-                                    onPress={() => this.toggleSwitch1()} color="yellow" />
-                                <TakeerText style={styles.normalText}>In gộp</TakeerText>
-                            </View> */}
+                            <View></View>} 
 
                         </ScrollView>
                         {this.state.HOTEN != '' ? <TakeerButton

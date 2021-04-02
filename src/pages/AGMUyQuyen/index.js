@@ -87,20 +87,7 @@ class AGMUyQuyen extends Component {
         this.setState({ itemUQ: uq, dgThongTinUQ: true })
     }
 
-    pickLoc = async (type) => {
-        this.setState({
-            pickType: type,
-            // isLoading: true
-        });
-        console.log(type); 
-        if (type == -1) {
-            this.setState({
-                lstUyQuyen: [],
-                isLoading: false
-            });
-            return;
-        }
-
+    getDsUQ = async (type, filter) => {
         var sURL = await url_UyQuyen_List();
         await fetch(sURL, {
             method: "POST",
@@ -108,25 +95,25 @@ class AGMUyQuyen extends Component {
                 "Content-Type": "application/json",
                 "username": this.props.agm.userAGM.userName,
                 "token": this.props.agm.userAGM.signInToken
-            }
+            },
+            body: JSON.stringify({ FILTER: filter })
         })
             .then(res => {
                 return res.json();
             })
             .then(response => {
-               
+                console.log("response", response);
                 if (response.State == true) {
                     let mData = [];
                     if (type == 0) {
                         mData = response.Data.filter(c => c.USERID == this.props.agm.userAGM.id);
-                        // mData = response.Data;
                     }
-                    else if (type == 1) {
+                    else if (type == 1 || type == -100) {
                         mData = response.Data;
                     }
                     console.log("url_UyQuyen_List", mData.length);
                     this.setState({ lstUyQuyen: mData, lstFULL: response.Data });
-                } 
+                }
                 this.setState({
                     isLoading: false
                 });
@@ -144,18 +131,35 @@ class AGMUyQuyen extends Component {
             });
     }
 
-    txtTimKiemSubmit = (txtTim) => { 
-        var lstTK = this.state.lstFULL.filter(c => c.NGUOI_UQ.indexOf(txtTim.nativeEvent.text) !== -1
-        || c.CMTDUOC_UQ.indexOf(txtTim.nativeEvent.text) !== -1
-        || c.CMT_NGUOIUQ.indexOf(txtTim.nativeEvent.text) !== -1
-        || c.MA_CODONG.toString().indexOf(txtTim.nativeEvent.text) !== -1
-        || c.NGUOIDUOC_UQ.indexOf(txtTim.nativeEvent.text) !== -1);
-
-        if (lstTK.length == 0) {
-            alert('Không tìm thấy thông tin')
+    pickLoc = async (type) => {
+        this.setState({
+            pickType: type,
+            // isLoading: true
+        });
+        console.log(type);
+        if (type == -1) {
+            this.setState({
+                lstUyQuyen: [],
+                isLoading: false
+            });
+            return;
         }
+        this.getDsUQ(type, '-1');
+       
+    }
 
-        this.setState({ lstUyQuyen: lstTK });
+    txtTimKiemSubmit = (txtTim) => {
+        // var lstTK = this.state.lstFULL.filter(c => c.NGUOI_UQ.indexOf(txtTim.nativeEvent.text) !== -1
+        //     || c.CMTDUOC_UQ.indexOf(txtTim.nativeEvent.text) !== -1
+        //     || c.CMT_NGUOIUQ.indexOf(txtTim.nativeEvent.text) !== -1
+        //     || c.MA_CODONG.toString().indexOf(txtTim.nativeEvent.text) !== -1
+        //     || c.NGUOIDUOC_UQ.indexOf(txtTim.nativeEvent.text) !== -1);
+
+        // if (lstTK.length == 0) {
+        //     alert('Không tìm thấy thông tin')
+        // }
+        this.getDsUQ(-100, txtTim.nativeEvent.text);
+        // this.setState({ lstUyQuyen: lstTK });
     }
 
     render() {

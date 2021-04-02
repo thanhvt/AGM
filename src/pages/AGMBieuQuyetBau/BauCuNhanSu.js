@@ -134,7 +134,7 @@ class BauCuNhanSu extends Component {
             sURL = await url_BauCu_MACD();
             data = {
                 MA_CODONG: this.state.macodong,
-                ID_CAUHOI: this.state.ID_CAUHOI,
+                // ID_CAUHOI: this.state.ID_CAUHOI,
                 SODKSH: '',
                 GET_NAME: true
             }
@@ -143,7 +143,7 @@ class BauCuNhanSu extends Component {
             sURL = await url_BauCu_SODKSH();
             data = {
                 MA_CODONG: '0',
-                ID_CAUHOI: this.state.ID_CAUHOI,
+                // ID_CAUHOI: this.state.ID_CAUHOI,
                 SODKSH: this.state.sodksh,
                 GET_NAME: true
             }
@@ -165,6 +165,15 @@ class BauCuNhanSu extends Component {
                 if (response.State == true) {
                     this.setState({
                         HOTEN: response.Data.HOTEN,
+                    });
+                }
+                else if (response.Message != '') {
+                    alert(response.Message);
+                    this.setState({
+                        sodksh: '',
+                        macodong: '',
+                        SOCP_SOHUU: '',
+                        HOTEN: ''
                     });
                 }
                 this.setState({

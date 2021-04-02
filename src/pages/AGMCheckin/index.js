@@ -87,8 +87,10 @@ class Checkin extends Component {
 
     handleOK = async () => {
         await this.setState({
-            isLoading: true,
             dgLyDoInLai: false
+        });
+        await this.setState({
+            isLoading: true,
         });
         var sURL = await url_Checkin_InLai();
         var data = {
@@ -136,13 +138,7 @@ class Checkin extends Component {
         });
     }
 
-    pickLoc = async (type) => {
-        console.log(type);
-        this.setState({
-            pickType: type,
-            // isLoading: true,
-        });
-
+    getDSCheckin = async (type, filter) => {
         var sURL = await url_Checkin_List();
         await fetch(sURL, {
             method: "POST",
@@ -150,7 +146,8 @@ class Checkin extends Component {
                 "Content-Type": "application/json",
                 "username": this.props.agm.userAGM.userName,
                 "token": this.props.agm.userAGM.signInToken
-            }
+            },
+            body: JSON.stringify({ FILTER: filter })
         })
             .then(res => {
                 return res.json();
@@ -167,7 +164,7 @@ class Checkin extends Component {
                         mData = response.Data;
                     }
                     this.setState({ lstCheckin: mData, lstFULL: response.Data });
-
+                    console.log("state", this.state.lstCheckin, mData);
                 } else {
 
                 }
@@ -183,15 +180,23 @@ class Checkin extends Component {
             });
     }
 
-    txtTimKiemSubmit = (txtTim) => {
-        console.log(this.state.lstFULL);
+    pickLoc = async (type) => {
+        console.log(type);
+        this.setState({
+            pickType: type,
+        });
+        this.getDSCheckin(type, '-1');
+    }
 
-        var lstTK = this.state.lstFULL.filter(c => c.CMT.indexOf(txtTim.nativeEvent.text) !== -1
-                        || c.MA_CODONG.toString().indexOf(txtTim.nativeEvent.text) !== -1);
-        if (lstTK.length == 0) {
-            alert('Không tìm thấy thông tin')
-        }
-        this.setState({ lstCheckin: lstTK });
+    txtTimKiemSubmit = (txtTim) => {
+        // console.log(this.state.lstFULL);
+        this.getDSCheckin('-100', txtTim.nativeEvent.text);
+        // var lstTK = this.state.lstFULL.filter(c => c.CMT.indexOf(txtTim.nativeEvent.text) !== -1
+        //     || c.MA_CODONG.toString().indexOf(txtTim.nativeEvent.text) !== -1);
+        // if (lstTK.length == 0) {
+        //     alert('Không tìm thấy thông tin')
+        // }
+        // this.setState({ lstCheckin: lstTK });
     }
 
     render() {
