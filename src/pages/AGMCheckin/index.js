@@ -119,7 +119,8 @@ class Checkin extends Component {
                     alert(response.Message);
                 }
                 this.setState({
-                    isLoading: false
+                    isLoading: false,
+                    txtLyDoInLai: ''
                 });
             })
             .catch(e => {
